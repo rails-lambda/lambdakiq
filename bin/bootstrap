@@ -1,0 +1,6 @@
+#!/bin/bash
+set -e
+
+echo '== Building containers =='
+docker pull lambci/lambda:build-ruby2.7
+docker-compose build

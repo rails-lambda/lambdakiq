@@ -1,0 +1,10 @@
+version: '3.7'
+services:
+  lambdakiqgem:
+    build: .
+    environment:
+      - AWS_PROFILE=${AWS_PROFILE-default}
+      - RAILS_ENV=${RAILS_ENV-test}
+    volumes:
+      - ${PWD}:/var/task:delegated
+      - ${HOME}/.aws:/root/.aws:delegated
