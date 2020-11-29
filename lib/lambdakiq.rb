@@ -1,6 +1,11 @@
+require 'json'
+require 'digest'
 require 'active_job'
-require 'aws-sdk-sqs'
+require 'active_job/queue_adapters'
 require 'lambdakiq/version'
+require 'lambdakiq/adapter'
+require 'lambdakiq/client'
+require 'lambdakiq/queue'
 
 # if defined?(Rails)
 #   require 'rails/railtie'
@@ -8,6 +13,10 @@ require 'lambdakiq/version'
 # end
 
 module Lambdakiq
+
+  def client
+    @client ||= Client.new
+  end
 
   extend self
 
