@@ -14,7 +14,8 @@ module ActiveJob
       private
 
       def delay_seconds(timestamp)
-        timestamp - Time.current.to_f
+        ds = timestamp - Time.current.to_f
+        [ds, 900].min
       end
 
     end

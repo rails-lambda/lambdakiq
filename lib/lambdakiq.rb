@@ -6,11 +6,8 @@ require 'lambdakiq/version'
 require 'lambdakiq/adapter'
 require 'lambdakiq/client'
 require 'lambdakiq/queue'
-
-# if defined?(Rails)
-#   require 'rails/railtie'
-#   require 'lambdakiq/railtie'
-# end
+require 'rails/railtie'
+require 'lambdakiq/railtie'
 
 module Lambdakiq
 
@@ -19,7 +16,5 @@ module Lambdakiq
   end
 
   extend self
-
-  # autoload :Xyz, 'lambdakiq/xyz'
 
 end

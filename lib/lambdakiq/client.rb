@@ -1,5 +1,6 @@
 module Lambdakiq
   class Client
+
     attr_reader :queues
 
     def initialize
