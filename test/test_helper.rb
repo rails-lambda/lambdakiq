@@ -8,4 +8,10 @@ require 'test_helper/event_helpers'
 
 class LambdakiqSpec < Minitest::Spec
 
+  private
+
+  def event_basic(overrides = {})
+    TestHelpers::Events::Basic.create(overrides)
+  end
+
 end
