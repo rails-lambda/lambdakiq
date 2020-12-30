@@ -3,7 +3,7 @@ module TestHelper
     class BasicNofifoJob < ApplicationJob
       queue_as 'lambdakiq-JobsQueue-TESTING123'
       def perform(object)
-        Buffer.add "BasicNofifoJob with: #{object.inspect}"
+        object
       end
     end
   end

@@ -33,6 +33,9 @@ end
 * Differences with Sidekiq
   - Max future/delay job is 15 minutes. Uses SQS `delay_seconds`.
   - Max retries is 12.
+* Client Optoins.
+  - Uses `ENV['AWS_REGION']` for `region`. Likely never need to touch this.
+  - Default Client Options. Show with config init or railtie?
 
 ## Our Siqekiq Interfaces
 
