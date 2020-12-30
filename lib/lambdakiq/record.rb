@@ -15,12 +15,12 @@ module Lambdakiq
       data['receiptHandle']
     end
 
-    def attributes
-      data['attributes']
-    end
-
     def queue_name
       @queue_name ||= data['eventSourceARN'].split(':').last
+    end
+
+    def attributes
+      data['attributes']
     end
 
     def sent_at

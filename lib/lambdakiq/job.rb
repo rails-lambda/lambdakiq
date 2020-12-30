@@ -7,10 +7,10 @@ module Lambdakiq
 
       def handle(event)
         records = Event.records(event)
-        jobs = records.map { |r| new(r) }
+        jobs = records.map { |record| new(record) }
         jobs.each(&:perform)
-        error = jobs.detect{ |j| j.error }
-        error ? raise(j.error) : true
+        jwerror = jobs.detect{ |j| j.error }
+        jwerror ? raise(jwerror.error) : true
       end
 
     end
@@ -24,8 +24,12 @@ module Lambdakiq
       @job_data ||= JSON.parse(record.body)
     end
 
+    def active_job
+      @active_job ||= ActiveJob::Base.deserialize(job_data)
+    end
+
     def queue
-      Lambdakiq.client.queues[record.queue_name]
+      Lambdakiq.client.queues[active_job.queue_name]
     end
 
     def performed?
