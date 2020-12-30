@@ -15,17 +15,12 @@ Lambdakiq::Client.default_options.merge! stub_responses: true
 class LambdakiqSpec < Minitest::Spec
 
   include TestHelper::ClientHelpers,
-          TestHelper::MessageHelpers
+          TestHelper::MessageHelpers,
+          TestHelper::EventHelpers
 
   before do
     client_reset!
     client_stub_responses
-  end
-
-  private
-
-  def event_basic(overrides = {})
-    TestHelper::Events::Basic.create(overrides)
   end
 
 end
