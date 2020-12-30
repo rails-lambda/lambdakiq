@@ -7,6 +7,18 @@ TODO ...
 # TODO ...
 ```
 
+## Usage
+
+Open `config/application.rb` and set Lambdakiq as your default ActiveJob queue adapter.
+
+```ruby
+module YourApp
+  class Application < Rails::Application
+    config.active_job.queue_adapter = :lambdakiq
+  end
+end
+```
+
 ## Contributing
 
 After checking out the repo, run:

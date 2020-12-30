@@ -1,6 +1,11 @@
 module Lambdakiq
   class Client
 
+    class_attribute :default_options,
+                    instance_writer: false,
+                    instance_predicate: false,
+                    default: Hash.new
+
     attr_reader :queues
 
     def initialize
@@ -20,16 +25,12 @@ module Lambdakiq
 
     def options
       default_options.tap do |opts|
-        opts[:region] = region if region
+        opts[:region] ||= region if region
       end
     end
 
     def region
       ENV['AWS_REGION']
-    end
-
-    def default_options
-      {}
     end
 
   end

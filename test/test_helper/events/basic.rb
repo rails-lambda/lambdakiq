@@ -1,4 +1,4 @@
-module TestHelpers
+module TestHelper
   module Events
     class Basic < Base
 
