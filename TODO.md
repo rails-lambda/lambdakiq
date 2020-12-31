@@ -41,6 +41,8 @@ end
 * Client Optoins.
   - Uses `ENV['AWS_REGION']` for `region`. Likely never need to touch this.
   - Default Client Options. Show with config init or railtie?
+* Max Message Size:
+  - FIFO: 256 KB??
 
 ## Our Siqekiq Interfaces
 
