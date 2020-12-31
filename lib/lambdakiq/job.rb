@@ -10,7 +10,8 @@ module Lambdakiq
         jobs = records.map { |record| new(record) }
         jobs.each(&:perform)
         jwerror = jobs.detect{ |j| j.error }
-        jwerror ? raise(jwerror.error) : true
+        return unless jwerror
+        raise JobError.new(jwerror.error)
       end
 
     end

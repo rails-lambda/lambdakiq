@@ -24,11 +24,9 @@ def _enqueue(job, send_message_opts = {})
 end
 ```
 
-* Use job's `attr_accessor :executions` vs `ApproximateReceiveCount`
 * Error handlers. Ensure we easily hook into Rollbar, etc.
-* Is `delete_message` message needed? Is 200 from consumer implied delete?
 * Can I set Rails tempalte `VisibilityTimeout` to just +1 of function timeout or full 43200?
-* Can I get rid of the Job re-raising and rely on change message visibility alone?
+* Do this in our gem. `ActiveJob::Base.logger = Logger.new(IO::NULL)`
 
 ## Doc Points
 
@@ -60,7 +58,6 @@ DO I MIRROR or MIGRATE
 ## Max Retries
 
 * Max is twelve.
-*
 
 ## Migrating from Sidekiq
 
