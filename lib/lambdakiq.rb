@@ -17,8 +17,8 @@ require 'lambdakiq/railtie'
 
 module Lambdakiq
 
-  def handle(event)
-    Job.handle(event)
+  def handler(event)
+    Job.handler(event)
   end
 
   def jobs?(event)

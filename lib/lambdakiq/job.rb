@@ -5,7 +5,7 @@ module Lambdakiq
 
     class << self
 
-      def handle(event)
+      def handler(event)
         records = Event.records(event)
         jobs = records.map { |record| new(record) }
         jobs.each(&:perform)
