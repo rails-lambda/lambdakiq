@@ -31,7 +31,6 @@ module Lambdakiq
     end
 
     def receive_count
-      puts "RECEIVE_COUNT: #{attributes['ApproximateReceiveCount'].to_i}"
       @receive_count ||= attributes['ApproximateReceiveCount'].to_i
     end
 

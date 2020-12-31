@@ -28,6 +28,7 @@ end
 * Error handlers. Ensure we easily hook into Rollbar, etc.
 * Is `delete_message` message needed? Is 200 from consumer implied delete?
 * Can I set Rails tempalte `VisibilityTimeout` to just +1 of function timeout or full 43200?
+* Can I get rid of the Job re-raising and rely on change message visibility alone?
 
 ## Doc Points
 
@@ -43,6 +44,7 @@ end
   - Default Client Options. Show with config init or railtie?
 * Max Message Size:
   - FIFO: 256 KB??
+* Setting `maxReceiveCount` hard codes your retries to -1 of that value at the queue level.
 
 ## Our Siqekiq Interfaces
 

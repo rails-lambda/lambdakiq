@@ -16,7 +16,7 @@ class RecordTest < LambdakiqSpec
   end
 
   it '#queue_name' do
-    expect(record.queue_name).must_equal 'lambdakiq-JobsQueue-TESTING123.fifo'
+    expect(record.queue_name).must_equal queue_name
   end
 
   it '#attributes' do

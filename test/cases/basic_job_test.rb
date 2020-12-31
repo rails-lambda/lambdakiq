@@ -3,10 +3,11 @@ require 'test_helper'
 class BasicJobTest < LambdakiqSpec
   before do
     TestHelper::Jobs::BasicJob.perform_later('somework')
+    expect(sent_message).must_be :present?
   end
 
   it 'message body' do
-    expect(sent_message_body['queue_name']).must_equal 'lambdakiq-JobsQueue-TESTING123.fifo'
+    expect(sent_message_body['queue_name']).must_equal queue_name
     expect(sent_message_body['job_class']).must_equal 'TestHelper::Jobs::BasicJob'
     expect(sent_message_body['arguments']).must_equal ['somework']
   end

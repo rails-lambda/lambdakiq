@@ -1,4 +1,5 @@
 ENV['RAILS_ENV'] = 'test'
+ENV['TEST_QUEUE_NAME'] ||= 'lambdakiq-JobsQueue-TESTING123.fifo'
 ENV['BUNDLE_GEMFILE'] ||= File.expand_path('../../Gemfile', __FILE__)
 require 'bundler/setup'
 Bundler.require :default, :development, :test
@@ -15,8 +16,9 @@ Lambdakiq::Client.default_options.merge! stub_responses: true
 class LambdakiqSpec < Minitest::Spec
 
   include TestHelper::ClientHelpers,
-          TestHelper::MessageHelpers,
-          TestHelper::EventHelpers
+          TestHelper::ApiRequestHelpers,
+          TestHelper::EventHelpers,
+          TestHelper::QueueHelpers
 
   before do
     client_reset!

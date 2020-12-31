@@ -17,5 +17,9 @@ module TestHelper
       })
     end
 
+    def api_requests
+      client.api_requests
+    end
+
   end
 end
