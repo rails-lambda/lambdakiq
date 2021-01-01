@@ -1,5 +1,10 @@
 module TestHelper
   module ClientHelpers
+    extend ActiveSupport::Concern
+
+    included do
+      let(:max_receive_count) { 8 }
+    end
 
     private
 
@@ -23,10 +28,6 @@ module TestHelper
 
     def api_requests
       client.api_requests
-    end
-
-    def max_receive_count
-      8
     end
 
   end

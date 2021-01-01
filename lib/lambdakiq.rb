@@ -13,6 +13,7 @@ require 'lambdakiq/event'
 require 'lambdakiq/job'
 require 'lambdakiq/record'
 require 'lambdakiq/backoff'
+require 'lambdakiq/metrics'
 require 'rails/railtie'
 require 'lambdakiq/railtie'
 
