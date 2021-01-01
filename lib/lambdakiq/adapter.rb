@@ -8,6 +8,7 @@ module ActiveJob
       end
 
       def enqueue_at(job, timestamp)
+        puts "DELAY: #{delay_seconds(timestamp)}"
         enqueue job, delay_seconds: delay_seconds(timestamp)
       end
 
