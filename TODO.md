@@ -44,6 +44,10 @@ end
   - FIFO: 256 KB??
 * Setting `maxReceiveCount` hard codes your retries to -1 of that value at the queue level.
 
+Q: How do I handle job priorities?
+A: Use different queues.
+
+
 ## Our Siqekiq Interfaces
 
 ```ruby
@@ -61,6 +65,14 @@ DO I MIRROR or MIGRATE
 
 ## Migrating from Sidekiq
 
+#### Change Worker
+
+```ruby
+class ApplicationJob < ActiveJob::Base
+  include Sidekiq::Worker
+  include Lambdakiq::Worker
+end
+```
 
 #### Single Job
 

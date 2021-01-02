@@ -19,6 +19,10 @@ class BasicJobTest < LambdakiqSpec
     expect(lambdakiq[:string_value]).must_equal '1'
   end
 
+  it 'message attributes do not include `delay_seconds` since no wait was set' do
+    expect(sent_message_attributes.key?('delay_seconds')).must_equal false
+  end
+
   it 'message group and deduplication id for default fifo queue are sent' do
     expect(sent_message_params[:message_group_id]).must_equal 'LambdakiqMessage'
     expect(sent_message_params[:message_deduplication_id]).must_be :present?

@@ -1,8 +1,9 @@
 require 'test_helper'
 
-class BasicNofifoJobTest < LambdakiqSpec
+class BasicJobNofifoTest < LambdakiqSpec
   before do
     TestHelper::Jobs::BasicNofifoJob.perform_later('somework')
+    expect(sent_message).must_be :present?
   end
 
   it 'message body has no fifo queue nave vs fifo super class ' do

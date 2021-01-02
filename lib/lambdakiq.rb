@@ -14,6 +14,7 @@ require 'lambdakiq/job'
 require 'lambdakiq/record'
 require 'lambdakiq/backoff'
 require 'lambdakiq/metrics'
+require 'lambdakiq/worker'
 require 'rails/railtie'
 require 'lambdakiq/railtie'
 
