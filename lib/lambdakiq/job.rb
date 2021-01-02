@@ -1,7 +1,7 @@
 module Lambdakiq
   class Job
 
-    attr_reader :record, :error, :sent_timestamp
+    attr_reader :record, :error
 
     class << self
 
@@ -33,13 +33,13 @@ module Lambdakiq
       Lambdakiq.client.queues[active_job.queue_name]
     end
 
-    def performed?
-      @started_at.present? && !error
-    end
-
     def perform
-      @started_at = Time.current
-      ActiveJob::Base.execute(job_data)
+      if queue.fifo? && record.fifo_delay_seconds?
+        delay_fifo_message_visibility
+      else
+        ActiveJob::Base.execute(job_data)
+      end
+      delete_message
     rescue Exception => e
       perform_error(e)
     end
@@ -77,6 +77,11 @@ module Lambdakiq
 
     def max_receive_count?
       record.max_receive_count? || record.receive_count >= queue.max_receive_count
+    end
+
+    def delay_fifo_message_visibility
+      params = client_params.merge visibility_timeout: record.fifo_delay_visibility_timeout
+      client.change_message_visibility(params)
     end
 
   end

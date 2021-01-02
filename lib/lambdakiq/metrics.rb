@@ -66,7 +66,7 @@ module Lambdakiq
     end
 
     def timestamp
-      Time.now.strftime('%s%3N').to_i
+      Time.current.strftime('%s%3N').to_i
     end
 
   end

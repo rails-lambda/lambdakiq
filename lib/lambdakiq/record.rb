@@ -23,10 +23,22 @@ module Lambdakiq
       data['attributes']
     end
 
+    def fifo_delay_visibility_timeout
+      fifo_delay_seconds - (Time.current - sent_at).to_i
+    end
+
+    def fifo_delay_seconds
+      data.dig('messageAttributes', 'delay_seconds', 'stringValue').try(:to_i)
+    end
+
+    def fifo_delay_seconds?
+      fifo_delay_seconds && (sent_at + fifo_delay_seconds).future?
+    end
+
     def sent_at
        @sent_at ||= begin
-        ts = attributes['SentTimestamp'].to_i
-        Time.at(ts/1000)
+        ts = attributes['SentTimestamp'].to_i / 1000
+        Time.zone ? Time.zone.at(ts) : Time.at(ts)
       end
     end
 

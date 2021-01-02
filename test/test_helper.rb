@@ -5,13 +5,13 @@ require 'bundler/setup'
 Bundler.require :default, :development, :test
 require 'rails'
 require 'aws-sdk-sqs'
+require 'stringio'
 require 'minitest/autorun'
 require 'minitest/focus'
 require 'mocha/minitest'
 Dir['test/test_helper/*.{rb}'].each { |f| require_relative "../#{f}" }
 
 ActiveJob::Base.queue_adapter = :lambdakiq
-ActiveJob::Base.logger = Logger.new(IO::NULL)
 Lambdakiq::Client.default_options.merge! stub_responses: true
 
 class LambdakiqSpec < Minitest::Spec
@@ -19,11 +19,15 @@ class LambdakiqSpec < Minitest::Spec
   include TestHelper::ClientHelpers,
           TestHelper::ApiRequestHelpers,
           TestHelper::EventHelpers,
-          TestHelper::QueueHelpers
+          TestHelper::QueueHelpers,
+          TestHelper::LogHelpers,
+          TestHelper::PerformHelpers
 
   before do
     client_reset!
     client_stub_responses
+    reset_active_job_logger!
+    perform_buffer_clear!
   end
 
 end

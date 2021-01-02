@@ -10,5 +10,19 @@ module TestHelper
       Events::Basic.create(overrides)
     end
 
+    def event_basic_delay(minutes: 5, timestamp: Time.current.strftime('%s%3N'))
+      Events::Basic.create(
+        attributes: { SentTimestamp: timestamp },
+        messageAttributes: {
+          delay_seconds: {
+            stringValue: minutes.minutes.to_s,
+            stringListValues: [],
+            binaryListValues: [],
+            dataType: 'String'
+          }
+        }
+      )
+    end
+
   end
 end

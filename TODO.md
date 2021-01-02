@@ -47,6 +47,7 @@ end
 Q: How do I handle job priorities?
 A: Use different queues.
 
+* How we allow FIFO queues to work with delay using message visibility.
 
 ## Our Siqekiq Interfaces
 
