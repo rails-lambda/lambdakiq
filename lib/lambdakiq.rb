@@ -32,6 +32,10 @@ module Lambdakiq
     @client ||= Client.new
   end
 
+  def config
+    Lambdakiq::Railtie.config.lambdakiq
+  end
+
   extend self
 
 end

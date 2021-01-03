@@ -22,7 +22,10 @@ module Lambdakiq
     end
 
     def job_data
-      @job_data ||= JSON.parse(record.body)
+      @job_data ||= JSON.parse(record.body).tap do |data|
+        data['provider_job_id'] = record.message_id
+        data['executions'] = record.receive_count - 1
+      end
     end
 
     def active_job
@@ -34,14 +37,14 @@ module Lambdakiq
     end
 
     def perform
-      if queue.fifo? && record.fifo_delay_seconds?
-        delay_fifo_message_visibility
-      else
-        ActiveJob::Base.execute(job_data)
-      end
+      fifo_delay? ? fifo_delay : execute
       delete_message
     rescue Exception => e
       perform_error(e)
+    end
+
+    def execute
+      ActiveJob::Base.execute(job_data)
     end
 
     private
@@ -79,7 +82,11 @@ module Lambdakiq
       record.max_receive_count? || record.receive_count >= queue.max_receive_count
     end
 
-    def delay_fifo_message_visibility
+    def fifo_delay?
+      queue.fifo? && record.fifo_delay_seconds?
+    end
+
+    def fifo_delay
       params = client_params.merge visibility_timeout: record.fifo_delay_visibility_timeout
       client.change_message_visibility(params)
     end

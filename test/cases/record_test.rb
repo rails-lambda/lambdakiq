@@ -25,7 +25,7 @@ class RecordTest < LambdakiqSpec
 
   it '#sent_at' do
     sent_at = record.sent_at
-    expect(sent_at).must_be_instance_of Time
+    expect(sent_at).must_be_instance_of ActiveSupport::TimeWithZone
     expect(sent_at.year).must_equal 2020
     expect(sent_at.month).must_equal 11
     expect(sent_at.day).must_equal 30

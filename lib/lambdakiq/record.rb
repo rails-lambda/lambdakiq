@@ -11,6 +11,10 @@ module Lambdakiq
       data['body']
     end
 
+    def message_id
+      data['messageId']
+    end
+
     def receipt_handle
       data['receiptHandle']
     end
@@ -47,7 +51,7 @@ module Lambdakiq
     end
 
     def max_receive_count?
-      receive_count >= 12
+      receive_count >= Lambdakiq.config.max_retries
     end
 
     def next_visibility_timeout

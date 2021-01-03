@@ -10,9 +10,8 @@ require 'minitest/autorun'
 require 'minitest/focus'
 require 'mocha/minitest'
 Dir['test/test_helper/*.{rb}'].each { |f| require_relative "../#{f}" }
-
-ActiveJob::Base.queue_adapter = :lambdakiq
 Lambdakiq::Client.default_options.merge! stub_responses: true
+require_relative './dummy_app/init'
 
 class LambdakiqSpec < Minitest::Spec
 
@@ -26,7 +25,7 @@ class LambdakiqSpec < Minitest::Spec
   before do
     client_reset!
     client_stub_responses
-    reset_active_job_logger!
+    logger_reset!
     perform_buffer_clear!
   end
 
