@@ -1,5 +1,8 @@
 module Lambdakiq
   class Error < StandardError
+  end
+
+  class JobError < Error
     attr_reader :original_exception, :job
 
     def initialize(error)
@@ -9,5 +12,6 @@ module Lambdakiq
     end
   end
 
-  class JobError < Error ; end
+  class FifoDelayError < Error
+  end
 end

@@ -41,7 +41,11 @@ module Lambdakiq
     end
 
     def perform
-      fifo_delay? ? fifo_delay : execute
+      if fifo_delay?
+        fifo_delay
+        raise FifoDelayError, active_job.job_id
+      end
+      execute
     end
 
     def execute

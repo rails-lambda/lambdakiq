@@ -72,7 +72,7 @@ class JobTest < LambdakiqSpec
 
   it 'must not perform and allow fifo queue to use message visibility as delay' do
     event = event_basic_delay minutes: 6
-    Lambdakiq::Job.handler(event)
+    error = expect(->{ Lambdakiq::Job.handler(event) }).must_raise 'HELL'
     expect(delete_message).must_be :blank?
     expect(change_message_visibility).must_be :present?
     expect(change_message_visibility_params[:visibility_timeout]).must_be_close_to 6.minutes, 1
@@ -82,7 +82,7 @@ class JobTest < LambdakiqSpec
 
   it 'must not perform and allow fifo queue to use message visibility as delay (using SentTimestamp)' do
     event = event_basic_delay minutes: 10, timestamp: 2.minutes.ago.strftime('%s%3N')
-    Lambdakiq::Job.handler(event)
+    error = expect(->{ Lambdakiq::Job.handler(event) }).must_raise 'HELL'
     expect(delete_message).must_be :blank?
     expect(change_message_visibility).must_be :present?
     expect(change_message_visibility_params[:visibility_timeout]).must_be_close_to 8.minutes, 1
