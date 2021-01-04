@@ -95,5 +95,8 @@ https://github.com/mperham/sidekiq/wiki/Error-Handling#death-notification
 * Rename all `sidekiq_options` to `lambdakiq_options`
 
 ```ruby
-ActiveJob::Base.logger = Logger.new(IO::NULL)
+config.after_initialize do
+  config.active_job.logger = Rails.logger
+  config.lambdakiq.metrics_logger = Rails.logger
+end
 ```

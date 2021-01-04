@@ -75,7 +75,7 @@ class JobTest < LambdakiqSpec
     Lambdakiq::Job.handler(event)
     expect(delete_message).must_be :blank?
     expect(change_message_visibility).must_be :present?
-    expect(change_message_visibility_params[:visibility_timeout]).must_equal 6.minutes
+    expect(change_message_visibility_params[:visibility_timeout]).must_be_close_to 6.minutes, 1
     expect(perform_buffer_last_value).must_be_nil
     expect(logger).must_be :blank?
   end
@@ -85,7 +85,7 @@ class JobTest < LambdakiqSpec
     Lambdakiq::Job.handler(event)
     expect(delete_message).must_be :blank?
     expect(change_message_visibility).must_be :present?
-    expect(change_message_visibility_params[:visibility_timeout]).must_equal 8.minutes
+    expect(change_message_visibility_params[:visibility_timeout]).must_be_close_to 8.minutes, 1
     expect(perform_buffer_last_value).must_be_nil
     expect(logger).must_be :blank?
   end
