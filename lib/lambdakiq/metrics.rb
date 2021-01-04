@@ -100,7 +100,8 @@ module Lambdakiq
     end
 
     def rails_app_name
-      Rails.application.class.name.split('::').first
+      Lambdakiq.config.metrics_app_name ||
+        Rails.application.class.name.split('::').first
     end
 
   end
