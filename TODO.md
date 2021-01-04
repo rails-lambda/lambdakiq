@@ -2,11 +2,13 @@
 # TODO
 
 * Do I need a worker module?
+  A: Yes.
 * Do I support vanillia ActiveJob?
+  A: No, these are not compatible.
 
 ```ruby
-class ExampleJob < ActiveJob::Base
-  retry_on ErrorLoadingSite, wait: 5.minutes, queue: :low_priority
+class AjRetryOnAndWait < ApplicationJob
+  retry_on ArgumentError, wait: 5.minutes
 ```
 
 * Do a some form of Async queue if this works on Lambda?
