@@ -19,6 +19,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
   spec.add_dependency 'activejob'
   spec.add_dependency 'aws-sdk-sqs'
+  spec.add_dependency 'concurrent-ruby'
   spec.add_dependency 'railties'
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'rake'

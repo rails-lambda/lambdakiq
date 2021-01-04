@@ -6,6 +6,7 @@ Bundler.require :default, :development, :test
 require 'rails'
 require 'aws-sdk-sqs'
 require 'stringio'
+require 'timeout'
 require 'minitest/autorun'
 require 'minitest/focus'
 require 'mocha/minitest'
@@ -27,6 +28,19 @@ class LambdakiqSpec < Minitest::Spec
     client_stub_responses
     logger_reset!
     perform_buffer_clear!
+  end
+
+  private
+
+  def wait_for(message, timeout: 2)
+    Timeout.timeout(timeout) do
+      loop do
+        value = yield
+        value ? break : sleep(0.1)
+      end
+    end
+  rescue Timeout::Error
+    flunk(message)
   end
 
 end

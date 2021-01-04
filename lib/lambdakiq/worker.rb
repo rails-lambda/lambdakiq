@@ -20,5 +20,9 @@ module Lambdakiq
       lambdakiq_options_hash[:retry]
     end
 
+    def lambdakiq_async?
+      !!lambdakiq_options_hash[:async]
+    end
+
   end
 end
