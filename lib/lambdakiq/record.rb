@@ -50,10 +50,6 @@ module Lambdakiq
       @receive_count ||= attributes['ApproximateReceiveCount'].to_i
     end
 
-    def max_receive_count?
-      receive_count >= Lambdakiq.config.max_retries
-    end
-
     def next_visibility_timeout
       @next_visibility_timeout ||= Backoff.backoff(receive_count)
     end

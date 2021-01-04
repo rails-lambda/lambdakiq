@@ -35,8 +35,4 @@ class RecordTest < LambdakiqSpec
     expect(record.receive_count).must_equal 1
   end
 
-  it '#max_receive_count?' do
-    expect(record.max_receive_count?).must_equal false
-  end
-
 end

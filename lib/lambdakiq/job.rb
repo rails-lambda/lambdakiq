@@ -36,15 +36,20 @@ module Lambdakiq
       Lambdakiq.client.queues[active_job.queue_name]
     end
 
+    def executions
+      active_job.executions
+    end
+
     def perform
       fifo_delay? ? fifo_delay : execute
-      delete_message
-    rescue Exception => e
-      perform_error(e)
     end
 
     def execute
       ActiveJob::Base.execute(job_data)
+      delete_message
+    rescue Exception => e
+      increment_executions
+      perform_error(e)
     end
 
     private
@@ -79,7 +84,13 @@ module Lambdakiq
     end
 
     def max_receive_count?
-      record.max_receive_count? || record.receive_count >= queue.max_receive_count
+      executions > retry_limit
+    end
+
+    def retry_limit
+      config_retry = [Lambdakiq.config.max_retries, 12].min
+      [ (active_job.lambdakiq_retry || config_retry),
+        (queue.max_receive_count - 1) ].min
     end
 
     def fifo_delay?
@@ -89,6 +100,10 @@ module Lambdakiq
     def fifo_delay
       params = client_params.merge visibility_timeout: record.fifo_delay_visibility_timeout
       client.change_message_visibility(params)
+    end
+
+    def increment_executions
+      active_job.executions = active_job.executions + 1
     end
 
   end

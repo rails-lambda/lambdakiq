@@ -1,6 +1,23 @@
 require 'test_helper'
 
 class JobTest < LambdakiqSpec
+
+  it '#active_job - a deserialize representation of what will be executed' do
+    aj = job.active_job
+    expect(aj).must_be_instance_of TestHelper::Jobs::BasicJob
+    expect(aj.job_id).must_equal '527cd37e-08f4-4aa8-9834-a46220cdc5a3'
+    expect(aj.queue_name).must_equal queue_name
+    expect(aj.enqueued_at).must_equal '2020-11-30T13:07:36Z'
+    expect(aj.executions).must_equal 0
+    expect(aj.provider_job_id).must_equal '9081fe74-bc79-451f-a03a-2fe5c6e2f807'
+  end
+
+  it '#active_job - executions uses ApproximateReceiveCount' do
+    event = event_basic attributes: { ApproximateReceiveCount: '3' }
+    aj = job(event: event).active_job
+    expect(aj.executions).must_equal 2
+  end
+
   it 'must perform basic job' do
     Lambdakiq::Job.handler(event_basic)
     expect(delete_message).must_be :present?
@@ -44,6 +61,7 @@ class JobTest < LambdakiqSpec
   end
 
   it 'must delete message for failed jobs at the end of the queue/message max receive count' do
+    # See ClientHelpers for setting queue to max receive count of 8.
     event = event_basic attributes: { ApproximateReceiveCount: '8' }, job_class: 'TestHelper::Jobs::ErrorJob'
     Lambdakiq::Job.handler(event)
     expect(delete_message).must_be :present?
@@ -55,6 +73,7 @@ class JobTest < LambdakiqSpec
   it 'must not perform and allow fifo queue to use message visibility as delay' do
     event = event_basic_delay minutes: 6
     Lambdakiq::Job.handler(event)
+    expect(delete_message).must_be :blank?
     expect(change_message_visibility).must_be :present?
     expect(change_message_visibility_params[:visibility_timeout]).must_equal 6.minutes
     expect(perform_buffer_last_value).must_be_nil
@@ -64,6 +83,7 @@ class JobTest < LambdakiqSpec
   it 'must not perform and allow fifo queue to use message visibility as delay (using SentTimestamp)' do
     event = event_basic_delay minutes: 10, timestamp: 2.minutes.ago.strftime('%s%3N')
     Lambdakiq::Job.handler(event)
+    expect(delete_message).must_be :blank?
     expect(change_message_visibility).must_be :present?
     expect(change_message_visibility_params[:visibility_timeout]).must_equal 8.minutes
     expect(perform_buffer_last_value).must_be_nil
@@ -79,4 +99,32 @@ class JobTest < LambdakiqSpec
     expect(logger).must_include 'Performing TestHelper::Jobs::BasicJob'
     expect(logger).must_include 'Performed TestHelper::Jobs::BasicJob'
   end
+
+  it 'must use `lambdakiq_options` retry options set to 0 and not retry job' do
+    event = event_basic job_class: 'TestHelper::Jobs::ErrorJobNoRetry'
+    Lambdakiq::Job.handler(event)
+    expect(delete_message).must_be :present?
+    expect(perform_buffer_last_value).must_equal 'ErrorJobNoRetry with: "test"'
+    expect(logger).must_include 'Performing TestHelper::Jobs::ErrorJobNoRetry'
+    expect(logger).must_include 'Error performing TestHelper::Jobs::ErrorJobNoRetry'
+  end
+
+  it 'must use `lambdakiq_options` retry options set to 1 and retry job' do
+    event = event_basic job_class: 'TestHelper::Jobs::ErrorJobOneRetry'
+    error = expect(->{ Lambdakiq::Job.handler(event) }).must_raise 'HELL'
+    expect(delete_message).must_be :blank?
+    expect(perform_buffer_last_value).must_equal 'ErrorJobOneRetry with: "test"'
+    expect(change_message_visibility).must_be :present?
+    expect(change_message_visibility_params[:visibility_timeout]).must_equal 30.seconds
+    expect(logger).must_include 'Performing TestHelper::Jobs::ErrorJobOneRetry'
+    expect(logger).must_include 'Error performing TestHelper::Jobs::ErrorJobOneRetry'
+  end
+
+  private
+
+  def job(event: event_basic)
+    record = Lambdakiq::Event.records(event).first
+    Lambdakiq::Job.new(record)
+  end
+
 end

@@ -48,6 +48,8 @@ Q: How do I handle job priorities?
 A: Use different queues.
 
 * How we allow FIFO queues to work with delay using message visibility.
+* Your SQS queue must have a `RedrivePolicy` policy!
+  https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-redrive
 
 ## Our Siqekiq Interfaces
 
