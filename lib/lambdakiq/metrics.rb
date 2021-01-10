@@ -51,8 +51,8 @@ module Lambdakiq
 
     def instrument!
       put_metric 'Duration', event.duration.to_i, 'Milliseconds'
-      put_metric job_name, 1, 'Count'
-      put_metric 'Exceptions', 1, 'Count' if exception
+      put_metric 'Count', 1, 'Count'
+      put_metric 'ExceptionCount', 1, 'Count' if exception
       set_property 'JobId', job.job_id
       set_property 'JobName', job_name
       set_property 'QueueName', job.queue_name

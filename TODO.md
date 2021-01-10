@@ -45,6 +45,10 @@ A: Use different queues.
 * Your SQS queue must have a `RedrivePolicy` policy!
   https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-redrive
 
+
+https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-specification-template-anatomy-globals.html
+
+
 ## Our Siqekiq Interfaces
 
 ```ruby
