@@ -48,6 +48,12 @@ class JobTest < LambdakiqSpec
     expect(perform_buffer_last_value).must_equal 'ErrorJob with: "test"'
     expect(logger).must_include 'Performing TestHelper::Jobs::ErrorJob'
     expect(logger).must_include 'Error performing TestHelper::Jobs::ErrorJob'
+    # binding.pry ; return
+    expect(logged_metric('retry_stopped.active_job')).must_be_nil
+    enqueue_retry = logged_metric('enqueue_retry.active_job')
+    expect(enqueue_retry).must_be :present?
+    expect(enqueue_retry['Executions']).must_equal 7
+    expect(enqueue_retry['ExceptionName']).must_equal 'RuntimeError'
   end
 
   it 'wraps returned errors with no backtrace which avoids excessive/duplicate cloudwatch logging' do
@@ -68,6 +74,11 @@ class JobTest < LambdakiqSpec
     expect(perform_buffer_last_value).must_equal 'ErrorJob with: "test"'
     expect(logger).must_include 'Performing TestHelper::Jobs::ErrorJob'
     expect(logger).must_include 'Error performing TestHelper::Jobs::ErrorJob'
+    expect(logged_metric('enqueue_retry.active_job')).must_be_nil
+    retry_stopped = logged_metric('retry_stopped.active_job')
+    expect(retry_stopped).must_be :present?
+    expect(retry_stopped['Executions']).must_equal 8
+    expect(retry_stopped['ExceptionName']).must_equal 'RuntimeError'
   end
 
   it 'must not perform and allow fifo queue to use message visibility as delay' do

@@ -37,8 +37,9 @@ module Lambdakiq
       Lambdakiq.config.metrics_namespace
     end
 
-    def exception
-      event.payload[:exception].try(:first)
+    def exception_name
+      event.payload[:exception].try(:first) ||
+        event.payload[:error]&.class&.name
     end
 
     def dimensions
@@ -52,12 +53,12 @@ module Lambdakiq
     def instrument!
       put_metric 'Duration', event.duration.to_i, 'Milliseconds'
       put_metric 'Count', 1, 'Count'
-      put_metric 'ExceptionCount', 1, 'Count' if exception
+      put_metric 'ExceptionCount', 1, 'Count' if exception_name
       set_property 'JobId', job.job_id
       set_property 'JobName', job_name
       set_property 'QueueName', job.queue_name
       set_property 'MessageId', job.provider_job_id if job.provider_job_id
-      set_property 'Exception', exception if exception
+      set_property 'ExceptionName', exception_name if exception_name
       set_property 'EnqueuedAt', job.enqueued_at if job.enqueued_at
       set_property 'Executions', job.executions if job.executions
       job.arguments.each_with_index do |argument, index|

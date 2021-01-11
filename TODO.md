@@ -98,3 +98,5 @@ config.after_initialize do
   config.lambdakiq.metrics_logger = Rails.logger
 end
 ```
+
+Instrument enqueue_retry and retry_stopped

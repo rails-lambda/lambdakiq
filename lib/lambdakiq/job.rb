@@ -64,8 +64,10 @@ module Lambdakiq
 
     def perform_error(e)
       if change_message_visibility
+        instrument :enqueue_retry, error: e, wait: record.next_visibility_timeout
         @error = e
       else
+        instrument :retry_stopped, error: e
         delete_message
       end
     end
@@ -108,6 +110,10 @@ module Lambdakiq
 
     def increment_executions
       active_job.executions = active_job.executions + 1
+    end
+
+    def instrument(name, error: nil, wait: nil)
+      active_job.send :instrument, name, error: error, wait: wait
     end
 
   end
