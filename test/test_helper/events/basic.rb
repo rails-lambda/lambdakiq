@@ -13,7 +13,7 @@ module TestHelper
                         "ApproximateReceiveCount": "1",
                         "SentTimestamp": "1606741656429",
                         "SequenceNumber": "18858069937755376128",
-                        "MessageGroupId": "LambdakiqMessage",
+                        "MessageGroupId": "527cd37e-08f4-4aa8-9834-a46220cdc5a3",
                         "SenderId": "AROA4DJKY67RBVYCN5UZ3",
                         "MessageDeduplicationId": "527cd37e-08f4-4aa8-9834-a46220cdc5a3",
                         "ApproximateFirstReceiveTimestamp": "1606741656429"

@@ -36,7 +36,7 @@ module Lambdakiq
 
     def message_params_fifo
       if queue.fifo?
-        { message_group_id: 'LambdakiqMessage',
+        { message_group_id: job.job_id,
           message_deduplication_id: job.job_id }
       else
         {}

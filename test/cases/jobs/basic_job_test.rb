@@ -24,8 +24,8 @@ class BasicJobTest < LambdakiqSpec
   end
 
   it 'message group and deduplication id for default fifo queue are sent' do
-    expect(sent_message_params[:message_group_id]).must_equal 'LambdakiqMessage'
     expect(sent_message_params[:message_deduplication_id]).must_be :present?
     UUID.validate(sent_message_params[:message_deduplication_id])
+    expect(sent_message_params[:message_group_id]).must_equal sent_message_params[:message_deduplication_id]
   end
 end
