@@ -25,6 +25,7 @@ lambdakiq_options async: true
 
 ## Doc Points
 
+* Periodic Job - CLoudWatch Events & Cron
 * Same as Sidekiq
   - Interface
 * Differences with Sidekiq
