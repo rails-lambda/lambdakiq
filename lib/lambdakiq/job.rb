@@ -10,9 +10,8 @@ module Lambdakiq
         jobs = records.map { |record| new(record) }
         jobs.each(&:perform)
         jwerror = jobs.detect{ |j| j.error }
-        return { statusCode: 422 }
-        # return unless jwerror
-        # raise JobError.new(jwerror.error)
+        return unless jwerror
+        raise JobError.new(jwerror.error)
       end
 
     end
@@ -51,7 +50,7 @@ module Lambdakiq
 
     def execute
       ActiveJob::Base.execute(job_data)
-      # delete_message
+      delete_message
     rescue Exception => e
       increment_executions
       perform_error(e)
