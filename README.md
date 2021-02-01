@@ -1,3 +1,4 @@
+![Test](https://github.com/customink/lambdakiq/workflows/Test/badge.svg)
 
 ![Lambdakiq: ActiveJob on SQS & Lambda](images/Lambdakiq.png)
 
@@ -53,7 +54,7 @@ Open up your project's SAM [`template.yaml`](https://lamby.custominktech.com/doc
 JobsQueue:
   Type: AWS::SQS::Queue
   Properties:
-    ReceiveMessageWaitTimeSeconds: 10 
+    ReceiveMessageWaitTimeSeconds: 10
     RedrivePolicy:
       deadLetterTargetArn: !GetAtt JobsDLQueue.Arn
       maxReceiveCount: 13
@@ -62,7 +63,7 @@ JobsQueue:
 JobsDLQueue:
   Type: AWS::SQS::Queue
   Properties:
-    MessageRetentionPeriod: 1209600 
+    MessageRetentionPeriod: 1209600
 ```
 
 In this example above we are also creating a queue to automatically handle our redrives and storage for any dead messages. We use [long polling](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-short-and-long-polling.html#sqs-long-polling) to receive messages for lower costs. In most cases your message is consumed almost immediately. Sidekiq polling is around 10s too.
@@ -71,7 +72,7 @@ The max receive count is 13 which means you get 12 retries. This is done so we c
 
 ### Queue Name Environment Variable
 
-We need to pass the newly created queue's name as an environment variable to your soon to be created jobs function. Since it is common for your Rails web and jobs functions to share these, we can leverage [SAM's Globals](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-specification-template-anatomy-globals.html) section. 
+We need to pass the newly created queue's name as an environment variable to your soon to be created jobs function. Since it is common for your Rails web and jobs functions to share these, we can leverage [SAM's Globals](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-specification-template-anatomy-globals.html) section.
 
 ```yaml
 Globals:
@@ -131,9 +132,9 @@ JobsLambda:
 Here are some key aspects of our `JobsLambda` resource above:
 
 * The `Events` property uses the [SQS Type](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-sqs.html).
-* Our [BatchSize](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-sqs.html#sam-function-sqs-batchsize) is set to one so we can handle retrys more easily without worrying about idempotency in larger batches.  
-* The `Metadata`'s Docker properties must be the same as our web function except for the `DockerTag`. This is needed for the image to be shared. This works around a known [SAM issue](https://github.com/aws/aws-sam-cli/issues/2466) vs using the `ImageConfig` property. 
-* The jobs function `Timeout` must be lower than the `JobsQueue`'s `VisibilityTimeout` property. When the batch size is one, the queue's visibility is generally one second more.   
+* Our [BatchSize](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-sqs.html#sam-function-sqs-batchsize) is set to one so we can handle retrys more easily without worrying about idempotency in larger batches.
+* The `Metadata`'s Docker properties must be the same as our web function except for the `DockerTag`. This is needed for the image to be shared. This works around a known [SAM issue](https://github.com/aws/aws-sam-cli/issues/2466) vs using the `ImageConfig` property.
+* The jobs function `Timeout` must be lower than the `JobsQueue`'s `VisibilityTimeout` property. When the batch size is one, the queue's visibility is generally one second more.
 
 🎉 Deploy your application and have fun with ActiveJob on SQS & Lambda.
 
@@ -157,7 +158,7 @@ You can also set configuration options on a per job basis using the `lambdakiq_o
 
 ```ruby
 class OrderProcessorJob < ApplicationJob
-  lambdakiq_options retry: 2 
+  lambdakiq_options retry: 2
 end
 ```
 
