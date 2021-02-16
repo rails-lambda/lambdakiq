@@ -46,6 +46,18 @@ class ApplicationJob < ActiveJob::Base
 end
 ```
 
+The same Docker image will be used for both your `web` and `jobs` functions, setup below. However, we need to update your Lambda handler to handle these events. Open your `app.rb` file and update the `handler` method like so. If the event is an SQS event, Lambdakiq will handle it, otherwise it is a web request.
+
+```ruby
+def handler(event:, context:)
+  if Lambdakiq.jobs?(event)
+    Lambdakiq.handler(event)
+  else
+    Lamby.handler $app, event, context, rack: :http
+  end
+end
+```
+
 ### SQS Resources
 
 Open up your project's SAM [`template.yaml`](https://lamby.custominktech.com/docs/anatomy#file-template-yaml) file and make the following additions and changes. First, we need to create your [SQS queues](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html) under the `Resources` section.
