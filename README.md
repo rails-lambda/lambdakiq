@@ -10,18 +10,17 @@ Lambdakiq allows you to leverage AWS' managed infrastructure to the fullest exte
 
 ## Key Features
 
-* Distinct web & jobs Lambda functions.
-* AWS fully managed polling. Event-driven.
-* Maximum 12 retries. Per job configurable.
-* Mirror Sidekiq's retry [backoff](https://github.com/mperham/sidekiq/wiki/Error-Handling#automatic-job-retry) timing.
-* Last retry is at 11 hours 30 minutes.
-* Supports ActiveJob's wait/delay. Up to 15 minutes.
-* Dead messages are stored for up to 14 days.
+- Distinct web & jobs Lambda functions.
+- AWS fully managed polling. Event-driven.
+- Maximum 12 retries. Per job configurable.
+- Mirror Sidekiq's retry [backoff](https://github.com/mperham/sidekiq/wiki/Error-Handling#automatic-job-retry) timing.
+- Last retry is at 11 hours 30 minutes.
+- Supports ActiveJob's wait/delay. Up to 15 minutes.
+- Dead messages are stored for up to 14 days.
 
 ## Project Setup
 
 This gem assumes your Rails application is on AWS Lambda, ideally with our [Lamby](https://lamby.custominktech.com) gem. It could be using Lambda's traditional zip package type or the newer [container](https://dev.to/aws-heroes/lambda-containers-with-rails-a-perfect-match-4lgb) format. If Rails on Lambda is new to you, consider following our [quick start](https://lamby.custominktech.com/docs/quick_start) guide to get your first application up and running. From there, to use Lambdakiq, here are steps to setup your project
-
 
 ### Bundle & Config
 
@@ -46,15 +45,19 @@ class ApplicationJob < ActiveJob::Base
 end
 ```
 
-The same Docker image will be used for both your `web` and `jobs` functions, setup below. However, we need to update your Lambda handler to handle these events. Open your `app.rb` file and update the `handler` method like so. If the event is an SQS event, Lambdakiq will handle it, otherwise it is a web request.
+The same Docker image will be used for both your `web` and `jobs` functions (example setup in following sections) which means the same `app.rb` handler would be used. The [Lamby](https://lamby.custominktech.com) gem automatically detects if Lambdakiq is being used so the following handler works as is.
 
 ```ruby
 def handler(event:, context:)
-  if Lambdakiq.jobs?(event)
-    Lambdakiq.handler(event)
-  else
-    Lamby.handler $app, event, context, rack: :http
-  end
+  Lamby.handler $app, event
+end
+```
+
+You can use the Lambdakiq handler directly in cases where your handler is a different method. Likewise there is a `Lambdakiq.jobs?(event)` helper function which returns true if the `messageAttributes` has a `lambdakiq` attribute.
+
+```ruby
+def jobs_handler(event:, context:)
+  Lambdakiq.handler(event)
 end
 ```
 
@@ -103,7 +106,7 @@ Both functions will need capabilities to access the SQS jobs queue. We can add o
 
 ```yaml
 Policies:
-  - Version: '2012-10-17'
+  - Version: "2012-10-17"
     Statement:
       - Effect: Allow
         Action:
@@ -131,7 +134,7 @@ JobsLambda:
     MemorySize: 1792
     PackageType: Image
     Policies:
-      - Version: '2012-10-17'
+      - Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Action:
@@ -143,10 +146,10 @@ JobsLambda:
 
 Here are some key aspects of our `JobsLambda` resource above:
 
-* The `Events` property uses the [SQS Type](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-sqs.html).
-* Our [BatchSize](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-sqs.html#sam-function-sqs-batchsize) is set to one so we can handle retrys more easily without worrying about idempotency in larger batches.
-* The `Metadata`'s Docker properties must be the same as our web function except for the `DockerTag`. This is needed for the image to be shared. This works around a known [SAM issue](https://github.com/aws/aws-sam-cli/issues/2466) vs using the `ImageConfig` property.
-* The jobs function `Timeout` must be lower than the `JobsQueue`'s `VisibilityTimeout` property. When the batch size is one, the queue's visibility is generally one second more.
+- The `Events` property uses the [SQS Type](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-sqs.html).
+- Our [BatchSize](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-sqs.html#sam-function-sqs-batchsize) is set to one so we can handle retrys more easily without worrying about idempotency in larger batches.
+- The `Metadata`'s Docker properties must be the same as our web function except for the `DockerTag`. This is needed for the image to be shared. This works around a known [SAM issue](https://github.com/aws/aws-sam-cli/issues/2466) vs using the `ImageConfig` property.
+- The jobs function `Timeout` must be lower than the `JobsQueue`'s `VisibilityTimeout` property. When the batch size is one, the queue's visibility is generally one second more.
 
 🎉 Deploy your application and have fun with ActiveJob on SQS & Lambda.
 
@@ -160,9 +163,9 @@ Most general Lambdakiq configuration options are exposed via the Rails standard 
 config.lambdakiq
 ```
 
-* `max_retries=` - Retries for all jobs. Default is the Lambdakiq maximum of `12`.
-* `metrics_namespace=` - The CloudWatch Embedded Metrics namespace. Default is `Lambdakiq`.
-* `metrics_logger=` - Set to the Rails logger which is STDOUT via Lamby/Lambda.
+- `max_retries=` - Retries for all jobs. Default is the Lambdakiq maximum of `12`.
+- `metrics_namespace=` - The CloudWatch Embedded Metrics namespace. Default is `Lambdakiq`.
+- `metrics_logger=` - Set to the Rails logger which is STDOUT via Lamby/Lambda.
 
 ### ActiveJob Configs
 
@@ -174,7 +177,7 @@ class OrderProcessorJob < ApplicationJob
 end
 ```
 
-* `retry` - Overrides the default Lambdakiq `max_retries` for this one job.
+- `retry` - Overrides the default Lambdakiq `max_retries` for this one job.
 
 ## Concurrency & Limits
 
@@ -192,42 +195,43 @@ Metrics are published under the `Lambdakiq` namespace. This is configurable usin
 
 ### Metric Dimensions
 
-* `AppName` - This is the name of your Rails application. Ex: `MyApp`
-* `JobEvent` - Name of the ActiveSupport Notification. Ex: `*.active_job`.
-* `JobName` - The class name of the ActiveSupport job. Ex: `NotificationJob`
+- `AppName` - This is the name of your Rails application. Ex: `MyApp`
+- `JobEvent` - Name of the ActiveSupport Notification. Ex: `*.active_job`.
+- `JobName` - The class name of the ActiveSupport job. Ex: `NotificationJob`
 
 ### ActiveJob Event Names
+
 For reference, here are the `JobEvent` names published by ActiveSupport. A few of these are instrumented by Lambdakiq since we use custom retry logic like Sidekiq. These event/metrics are found in the Rails application CloudWatch logs because they publish/enqueue jobs.
 
-* `enqueue.active_job`
-* `enqueue_at.active_job`
+- `enqueue.active_job`
+- `enqueue_at.active_job`
 
 While these event/metrics can be found in the jobs function's log.
 
-* `perform_start.active_job`
-* `perform.active_job`
-* `enqueue_retry.active_job`
-* `retry_stopped.active_job`
+- `perform_start.active_job`
+- `perform.active_job`
+- `enqueue_retry.active_job`
+- `retry_stopped.active_job`
 
 ### Metric Properties
 
 These are the properties published with each metric. Remember, properties can not be used as metric data in charts but can be searched using [CloudWatch Logs Insights](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AnalyzingLogData.html).
 
-* `JobId` - ActiveJob Unique ID. Ex: `9f3b6977-6afc-4769-aed6-bab1ad9a0df5`
-* `QueueName` - SQS Queue Name. Ex: `myapp-JobsQueue-14F18LG6XFUW5.fifo`
-* `MessageId` - SQS Message ID. Ex: `5653246d-dc5e-4c95-9583-b6b83ec78602`
-* `ExceptionName` - Class name of error raised. Present in perform and retry events.
-* `EnqueuedAt` - When ActiveJob enqueued the message. Ex: `2021-01-14T01:43:38Z`
-* `Executions` - The number of current executions. Counts from `1` and up.
-* `JobArg#{n}` - Enumerated serialized arguments.
+- `JobId` - ActiveJob Unique ID. Ex: `9f3b6977-6afc-4769-aed6-bab1ad9a0df5`
+- `QueueName` - SQS Queue Name. Ex: `myapp-JobsQueue-14F18LG6XFUW5.fifo`
+- `MessageId` - SQS Message ID. Ex: `5653246d-dc5e-4c95-9583-b6b83ec78602`
+- `ExceptionName` - Class name of error raised. Present in perform and retry events.
+- `EnqueuedAt` - When ActiveJob enqueued the message. Ex: `2021-01-14T01:43:38Z`
+- `Executions` - The number of current executions. Counts from `1` and up.
+- `JobArg#{n}` - Enumerated serialized arguments.
 
 ### Metric Data
 
 And finally, here are the metrics which each dimension can chart using [CloudWatch Metrics & Dashboards](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Dashboards.html).
 
-* `Duration` - Of the job event in milliseconds.
-* `Count` - Of the event.
-* `ExceptionCount` - Of the event. Useful with `ExceptionName`.
+- `Duration` - Of the job event in milliseconds.
+- `Count` - Of the event.
+- `ExceptionCount` - Of the event. Useful with `ExceptionName`.
 
 ### CloudWatch Dashboard Examples
 
@@ -235,15 +239,14 @@ Please share how you are using CloudWatch to monitor and/or alert on your Active
 
 💬 https://github.com/customink/lambdakiq/discussions/3
 
-
 ## Common Questions
 
 **Are Scheduled Jobs Supported?** - No. If you need a scheduled job please use the [SAM Schedule](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-schedule.html) event source which invokes your function with an [Eventbridege AWS::Events::Rule](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-rule.html).
 
 **Are FIFO Queues Supported?** - Yes. When you create your [AWS::SQS::Queue](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html) resources you can set the [FifoQueue](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-fifoqueue) property to `true`. Remember that both your jobs queue and the redrive queue must be the same. When using FIFO we:
 
-* Simulate `delay_seconds` for ActiveJob's wait by using visibility timeouts under the hood. We still cap it to non-FIFO's 15 minutes.
-* Set both the messages `message_group_id` and `message_deduplication_id` to the unique job id provided by ActiveJob.
+- Simulate `delay_seconds` for ActiveJob's wait by using visibility timeouts under the hood. We still cap it to non-FIFO's 15 minutes.
+- Set both the messages `message_group_id` and `message_deduplication_id` to the unique job id provided by ActiveJob.
 
 **Can I Use Multiple Queues?** - Yes. Nothing is stopping you from creating any number of queues and/or functions to process them. Your subclasses can use ActiveJob's `queue_as` method as needed. This is an easy way to handle job priorities too.
 
