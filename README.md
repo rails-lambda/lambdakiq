@@ -1,6 +1,6 @@
-![Test](https://github.com/customink/lambdakiq/workflows/Test/badge.svg)
-
 ![Lambdakiq: ActiveJob on SQS & Lambda](images/Lambdakiq.png)
+
+![Test](https://github.com/customink/lambdakiq/workflows/Test/badge.svg)
 
 # Lambdakiq
 
