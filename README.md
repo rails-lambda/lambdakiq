@@ -49,7 +49,7 @@ The same Docker image will be used for both your `web` and `jobs` functions (exa
 
 ```ruby
 def handler(event:, context:)
-  Lamby.handler $app, event
+  Lamby.handler $app, event, context
 end
 ```
 
