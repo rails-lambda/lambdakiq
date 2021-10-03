@@ -115,6 +115,8 @@ Policies:
           - !Sub arn:aws:sqs:${AWS::Region}:${AWS::AccountId}:${JobsQueue.QueueName}
 ```
 
+### Overview
+
 Now we can duplicate our `RailsLambda` resource YAML (except for the `Events` property) to a new `JobsLambda` one. This gives us a distinct Lambda function to process jobs whose events, memory, timeout, and more can be independently tuned. However, both the `web` and `jobs` functions will use the same ECR container image!
 
 ```yaml
