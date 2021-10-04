@@ -16,6 +16,7 @@ module Lambdakiq
     end
 
     def log
+      return unless lambdakiq?
       logger.info JSON.dump(message)
     end
 
@@ -27,6 +28,10 @@ module Lambdakiq
 
     def job_name
       job.class.name
+    end
+
+    def lambdakiq?
+      job.respond_to?(:lambdakiq?) && job.lambdakiq?
     end
 
     def logger

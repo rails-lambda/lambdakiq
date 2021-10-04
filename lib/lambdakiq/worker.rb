@@ -16,6 +16,10 @@ module Lambdakiq
 
     end
 
+    def lambdakiq?
+      true
+    end
+
     def lambdakiq_retry
       lambdakiq_options_hash[:retry]
     end
