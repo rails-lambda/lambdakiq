@@ -56,6 +56,7 @@ module Lambdakiq
     end
 
     def instrument!
+      return unless lambdakiq?
       put_metric 'Duration', event.duration.to_i, 'Milliseconds'
       put_metric 'Count', 1, 'Count'
       put_metric 'ExceptionCount', 1, 'Count' if exception_name
