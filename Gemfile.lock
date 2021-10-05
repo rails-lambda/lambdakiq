@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    lambdakiq (1.0.3)
+    lambdakiq (1.0.4)
       activejob
       aws-sdk-sqs
       concurrent-ruby

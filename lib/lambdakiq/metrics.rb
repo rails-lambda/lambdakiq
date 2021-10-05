@@ -30,8 +30,14 @@ module Lambdakiq
       job.class.name
     end
 
+    def adapter_name
+      event.payload[:adapter].class.name
+    end
+
     def lambdakiq?
-      job.respond_to?(:lambdakiq?) && job.lambdakiq?
+      adapter_name.include?('Lambdakiq') && 
+        job.respond_to?(:lambdakiq?) && 
+        job.lambdakiq?
     end
 
     def logger
@@ -65,7 +71,7 @@ module Lambdakiq
       set_property 'QueueName', job.queue_name
       set_property 'MessageId', job.provider_job_id if job.provider_job_id
       set_property 'ExceptionName', exception_name if exception_name
-      set_property 'EnqueuedAt', job.enqueued_at if job.enqueued_at
+      set_property 'EnqueuedAt', job.enqueued_at if job.respond_to?(:enqueued_at) && job.enqueued_at
       set_property 'Executions', job.executions if job.executions
       job.arguments.each_with_index do |argument, index|
         set_property "JobArg#{index+1}", argument
@@ -113,4 +119,3 @@ module Lambdakiq
 
   end
 end
-
