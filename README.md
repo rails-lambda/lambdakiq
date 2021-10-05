@@ -45,6 +45,17 @@ class ApplicationJob < ActiveJob::Base
 end
 ```
 
+Using ActionMailer's built-in deliver job with ActiveJob? Make sure to include the Lambdakiq worker and set the queue name depending on your Rails version.
+
+```ruby
+# Rails 5.x
+ActionMailer::DeliveryJob.include Lambdakiq::Worker
+ActionMailer::DeliveryJob.queue_as ENV['JOBS_QUEUE_NAME']
+# Rails 6.x
+ActionMailer::MailDeliveryJob.include Lambdakiq::Worker
+ActionMailer::MailDeliveryJob.queue_as ENV['JOBS_QUEUE_NAME']
+```
+
 The same Docker image will be used for both your `web` and `jobs` functions (example setup in following sections) which means the same `app.rb` handler would be used. The [Lamby](https://lamby.custominktech.com) gem automatically detects if Lambdakiq is being used so the following handler works as is.
 
 ```ruby
