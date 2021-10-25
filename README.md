@@ -30,7 +30,7 @@ Add the Lambdakiq gem to your `Gemfile`.
 gem 'lambdakiq'
 ```
 
-Open `config/initializers/production.rb` and set Lambdakiq as your ActiveJob queue adapter.
+Open `config/environments/production.rb` and set Lambdakiq as your ActiveJob queue adapter.
 
 ```ruby
 config.active_job.queue_adapter = :lambdakiq
@@ -45,7 +45,7 @@ class ApplicationJob < ActiveJob::Base
 end
 ```
 
-Using ActionMailer's built-in deliver job with ActiveJob? Make sure to include the Lambdakiq worker and set the queue name depending on your Rails version.
+Using ActionMailer's built-in deliver job with ActiveJob? Make sure to include the Lambdakiq worker and set the queue name depending on your Rails version. You can do this in a newly created `config/initializers//action_mailer.rb` or another initializer of your choice.
 
 ```ruby
 # Rails 5.x
