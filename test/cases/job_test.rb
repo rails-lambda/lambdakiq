@@ -3,7 +3,8 @@ require 'test_helper'
 class JobTest < LambdakiqSpec
 
   it '#active_job - a deserialize representation of what will be executed' do
-    aj = job.active_job
+    e = event_basic messageId: '9081fe74-bc79-451f-a03a-2fe5c6e2f807'
+    aj = job(event: e).active_job
     expect(aj).must_be_instance_of TestHelper::Jobs::BasicJob
     expect(aj.job_id).must_equal '527cd37e-08f4-4aa8-9834-a46220cdc5a3'
     expect(aj.queue_name).must_equal queue_name
@@ -28,7 +29,7 @@ class JobTest < LambdakiqSpec
   end
 
   it 'logs cloudwatch embedded metrics' do
-    Lambdakiq::Job.handler(event_basic)
+    Lambdakiq::Job.handler(event_basic(messageId: '9081fe74-bc79-451f-a03a-2fe5c6e2f807'))
     metric = logged_metric('perform.active_job')
     expect(metric).must_be :present?
     expect(metric['AppName']).must_equal 'Dummy'

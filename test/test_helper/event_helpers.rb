@@ -1,5 +1,6 @@
 require 'test_helper/events/base'
 require 'test_helper/events/basic'
+require 'securerandom'
 
 module TestHelper
   module EventHelpers

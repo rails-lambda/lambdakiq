@@ -6,7 +6,7 @@ module TestHelper
         {
             "Records": [
                 {
-                    "messageId": "9081fe74-bc79-451f-a03a-2fe5c6e2f807",
+                    "messageId": "abcdefgh-ijkl-mnop-qrst-uvwxyz012345",
                     "receiptHandle": "AQEBgbn8GmF1fMo4z3IIqlJYymS6e7NBynwE+LsQlzjjdcKtSIomGeKMe0noLC9UDShUSe8bzr0s+pby03stHNRv1hgg4WRB5YT4aO0dwOuio7LvMQ/VW88igQtWmca78K6ixnU9X5Sr6J+/+WMvjBgIdvO0ycAM2tyJ1nxRHs/krUoLo/bFCnnwYh++T5BLQtFjFGrRkPjWnzjAbLWKU6Hxxr5lkHSxGhjfAoTCOjhi9crouXaWD+H1uvoGx/O/ZXaeMNjKIQoKjhFguwbEpvrq2Pfh2x9nRgBP3cKa9qw4Q3oFQ0MiQAvnK+UO8cCnsKtD",
                     "body": "{\"job_class\":\"TestHelper::Jobs::BasicJob\",\"job_id\":\"527cd37e-08f4-4aa8-9834-a46220cdc5a3\",\"provider_job_id\":null,\"queue_name\":\"lambdakiq-JobsQueue-TESTING123.fifo\",\"priority\":null,\"arguments\":[\"test\"],\"executions\":0,\"exception_executions\":{},\"locale\":\"en\",\"timezone\":\"UTC\",\"enqueued_at\":\"2020-11-30T13:07:36Z\"}",
                     "attributes": {
