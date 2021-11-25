@@ -10,8 +10,8 @@ module Lambdakiq
         jobs = records.map { |record| new(record) }
         jobs.each(&:perform)
         failed_jobs = jobs.select { |j| j.error }
-        item_failures = failed_jobs.map { |j| { ItemIdentifier: j.provider_job_id } }
-        { BatchItemFailures: item_failures }
+        item_failures = failed_jobs.map { |j| { itemIdentifier: j.provider_job_id } }
+        { batchItemFailures: item_failures }
       end
 
     end
