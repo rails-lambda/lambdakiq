@@ -21,7 +21,8 @@ class LambdakiqSpec < Minitest::Spec
           TestHelper::EventHelpers,
           TestHelper::QueueHelpers,
           TestHelper::LogHelpers,
-          TestHelper::PerformHelpers
+          TestHelper::PerformHelpers,
+          TestHelper::ResponseHelpers
 
   before do
     client_reset!

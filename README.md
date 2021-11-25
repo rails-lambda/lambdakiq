@@ -144,6 +144,8 @@ JobsLambda:
         Properties:
           Queue: !GetAtt JobsQueue.Arn
           BatchSize: 1
+          FunctionResponseTypes:
+            - ReportBatchItemFailures
     MemorySize: 1792
     PackageType: Image
     Policies:

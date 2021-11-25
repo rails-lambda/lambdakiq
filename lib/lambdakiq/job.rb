@@ -9,9 +9,9 @@ module Lambdakiq
         records = Event.records(event)
         jobs = records.map { |record| new(record) }
         jobs.each(&:perform)
-        jwerror = jobs.detect{ |j| j.error }
-        return unless jwerror
-        raise JobError.new(jwerror.error)
+        failed_jobs = jobs.select { |j| j.error }
+        item_failures = failed_jobs.map { |j| { ItemIdentifier: j.provider_job_id } }
+        { BatchItemFailures: item_failures }
       end
 
     end
@@ -40,10 +40,14 @@ module Lambdakiq
       active_job.executions
     end
 
+    def provider_job_id
+      active_job.provider_job_id
+    end
+
     def perform
       if fifo_delay?
         fifo_delay
-        raise FifoDelayError, active_job.job_id
+        return
       end
       execute
     end
@@ -104,6 +108,7 @@ module Lambdakiq
     end
 
     def fifo_delay
+      @error = FifoDelayError.new(active_job.job_id)
       params = client_params.merge visibility_timeout: record.fifo_delay_visibility_timeout
       client.change_message_visibility(params)
     end
