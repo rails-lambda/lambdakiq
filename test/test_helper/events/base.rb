@@ -6,6 +6,7 @@ module TestHelper
       self.event = Hash.new
 
       def self.create(overrides = {})
+        overrides[:messageId] ||= SecureRandom.uuid
         job_class = overrides.delete(:job_class)
         event.deep_dup.tap do |e|
           e['Records'].each do |r|

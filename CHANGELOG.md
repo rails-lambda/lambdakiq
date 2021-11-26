@@ -2,6 +2,12 @@
 
 See this http://keepachangelog.com link for information on how we want this documented formatted.
 
+## v2.0.0
+
+#### Changed
+
+- Leverage new `ReportBatchItemFailures` feature of SQS.
+
 ## v1.0.2, v1.0.3, v1.0.4
 
 #### Fixed

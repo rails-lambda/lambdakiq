@@ -144,6 +144,8 @@ JobsLambda:
         Properties:
           Queue: !GetAtt JobsQueue.Arn
           BatchSize: 1
+          FunctionResponseTypes:
+            - ReportBatchItemFailures
     MemorySize: 1792
     PackageType: Image
     Policies:
@@ -160,9 +162,9 @@ JobsLambda:
 Here are some key aspects of our `JobsLambda` resource above:
 
 - The `Events` property uses the [SQS Type](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-sqs.html).
-- Our [BatchSize](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-sqs.html#sam-function-sqs-batchsize) is set to one so we can handle retrys more easily without worrying about idempotency in larger batches.
+- The [BatchSize](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-sqs.html#sam-function-sqs-batchsize) can be any number you like. Less means more Lambda concurrency, more means some jobs could take longer. The jobs function `Timeout` must be lower than the `JobsQueue`'s `VisibilityTimeout` property. When the batch size is one, the queue's visibility is generally one second more.
+- You must use `ReportBatchItemFailures` response types. Lambdakiq assumes we are [reporting batch item failures](https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#services-sqs-batchfailurereporting). This is a new feature of SQS introduced in [November 2021](https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#services-sqs-batchfailurereporting).
 - The `Metadata`'s Docker properties must be the same as our web function except for the `DockerTag`. This is needed for the image to be shared. This works around a known [SAM issue](https://github.com/aws/aws-sam-cli/issues/2466) vs using the `ImageConfig` property.
-- The jobs function `Timeout` must be lower than the `JobsQueue`'s `VisibilityTimeout` property. When the batch size is one, the queue's visibility is generally one second more.
 
 🎉 Deploy your application and have fun with ActiveJob on SQS & Lambda.
 
@@ -191,12 +193,6 @@ end
 ```
 
 - `retry` - Overrides the default Lambdakiq `max_retries` for this one job.
-
-## Concurrency & Limits
-
-AWS SQS is highly scalable with [few limits](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-quotas.html). As your jobs in SQS increases so should your concurrent functions to process that work. However, as this article, ["Why isn't my Lambda function with an Amazon SQS event source scaling optimally?"](https://aws.amazon.com/premiumsupport/knowledge-center/lambda-sqs-scaling/) describes it is possible that errors will effect your concurrency.
-
-To help keep your queue and workers scalable, reduce the errors raised by your jobs. You an also reduce the retry count.
 
 ## Observability with CloudWatch
 
