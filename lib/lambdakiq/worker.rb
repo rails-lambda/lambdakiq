@@ -4,8 +4,8 @@ module Lambdakiq
 
     included do
       class_attribute :lambdakiq_options_hash,
-                      instance_predicate: false,
-                      default: Hash.new
+                      instance_predicate: false
+      self.lambdakiq_options_hash = Hash.new
     end
 
     class_methods do
