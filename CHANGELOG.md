@@ -2,6 +2,12 @@
 
 See this http://keepachangelog.com link for information on how we want this documented formatted.
 
+## v2.0.2
+
+#### Fixed
+
+- Rails 5.1 oddities for class attribute default not set.
+
 ## v2.0.1
 
 #### Fixed
