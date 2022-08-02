@@ -3,8 +3,8 @@ module Lambdakiq
 
     class_attribute :default_options,
                     instance_writer: false,
-                    instance_predicate: false,
-                    default: Hash.new
+                    instance_predicate: false
+    self.default_options = Hash.new
 
     attr_reader :queues
 
