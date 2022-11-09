@@ -52,7 +52,6 @@ class JobTest < LambdakiqSpec
     expect(perform_buffer_last_value).must_equal 'ErrorJob with: "test"'
     expect(logger).must_include 'Performing TestHelper::Jobs::ErrorJob'
     expect(logger).must_include 'Error performing TestHelper::Jobs::ErrorJob'
-    # binding.pry ; return
     expect(logged_metric('retry_stopped.active_job')).must_be_nil
     enqueue_retry = logged_metric('enqueue_retry.active_job')
     expect(enqueue_retry).must_be :present?
@@ -80,12 +79,30 @@ class JobTest < LambdakiqSpec
     expect(logger).must_include 'Error performing TestHelper::Jobs::ErrorJob'
   end
 
-  it 'must delete message for failed jobs at the end of the queue/message max receive count' do
-    # See ClientHelpers for setting queue to max receive count of 8.
-    event = event_basic attributes: { ApproximateReceiveCount: '8' }, job_class: 'TestHelper::Jobs::ErrorJob'
+  it 'must delete message for failed jobs after the first try when queues do not have a redrive policy' do
+    client.stub_responses(:get_queue_attributes, { attributes: {} })
+    event = event_basic job_class: 'TestHelper::Jobs::ErrorJob'
     response = Lambdakiq::Job.handler(event)
     assert_response response, failures: false
     expect(delete_message).must_be :present?
+    expect(perform_buffer_last_value).must_equal 'ErrorJob with: "test"'
+    expect(logger).must_include 'Performing TestHelper::Jobs::ErrorJob'
+    expect(logger).must_include 'Error performing TestHelper::Jobs::ErrorJob'
+    expect(logged_metric('enqueue_retry.active_job')).must_be_nil
+    retry_stopped = logged_metric('retry_stopped.active_job')
+    expect(retry_stopped).must_be :present?
+    expect(retry_stopped['Executions']).must_equal 1
+    expect(retry_stopped['ExceptionName']).must_equal 'RuntimeError'
+  end
+
+  it 'must not delete message for failed jobs and instead return a failure at the end of the queue/message max receive count' do
+    # See ClientHelpers for setting queue to max receive count of 8.
+    event = event_basic attributes: { ApproximateReceiveCount: '8' }, job_class: 'TestHelper::Jobs::ErrorJob', messageId: message_id
+    response = Lambdakiq::Job.handler(event)
+
+    assert_response response, failures: true, identifiers: [message_id]
+    expect(change_message_visibility).must_be_nil
+    expect(delete_message).must_be_nil
     expect(perform_buffer_last_value).must_equal 'ErrorJob with: "test"'
     expect(logger).must_include 'Performing TestHelper::Jobs::ErrorJob'
     expect(logger).must_include 'Error performing TestHelper::Jobs::ErrorJob'
