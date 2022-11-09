@@ -22,11 +22,11 @@ module Lambdakiq
     end
 
     def redrive_policy
-      @redrive_policy ||= JSON.parse(attributes['RedrivePolicy'])
+      @redrive_policy ||= attributes['RedrivePolicy'] ? JSON.parse(attributes['RedrivePolicy']) : nil
     end
 
     def max_receive_count
-      redrive_policy['maxReceiveCount'].to_i
+      redrive_policy&.dig('maxReceiveCount')&.to_i || 1
     end
 
     def fifo?
