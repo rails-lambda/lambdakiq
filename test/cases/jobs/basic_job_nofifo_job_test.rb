@@ -6,7 +6,7 @@ class BasicJobNofifoTest < LambdakiqSpec
     expect(sent_message).must_be :present?
   end
 
-  it 'message body has no fifo queue nave vs fifo super class ' do
+  it 'message body has no fifo queue name vs fifo super class ' do
     expect(sent_message_body['queue_name']).must_equal 'lambdakiq-JobsQueue-TESTING123'
   end
 
