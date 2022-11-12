@@ -2,6 +2,12 @@
 
 See this http://keepachangelog.com link for information on how we want this documented formatted.
 
+## v2.1.0
+
+#### Fixed
+
+- Ensure failed messages go to DLQ. Fixes #30. Fixes #31. Thanks @thenano
+
 ## v2.0.2
 
 #### Fixed
