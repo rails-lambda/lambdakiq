@@ -72,7 +72,11 @@ module Lambdakiq
         @error = e
       else
         instrument :retry_stopped, error: e
-        delete_message
+        if should_redrive?
+          @error = e
+        else
+          delete_message
+        end
       end
     end
 
@@ -97,10 +101,16 @@ module Lambdakiq
       executions > retry_limit
     end
 
+    def job_retry
+      [active_job.lambdakiq_retry, Lambdakiq.config.max_retries, 12].compact.min
+    end
+
     def retry_limit
-      config_retry = [Lambdakiq.config.max_retries, 12].min
-      [ (active_job.lambdakiq_retry || config_retry),
-        (queue.max_receive_count - 1) ].min
+      [job_retry, (queue.max_receive_count - 1)].min
+    end
+
+    def should_redrive?
+      !queue.redrive_policy.nil? && job_retry >= queue.max_receive_count
     end
 
     def fifo_delay?
