@@ -56,21 +56,7 @@ ActionMailer::MailDeliveryJob.include Lambdakiq::Worker
 ActionMailer::MailDeliveryJob.queue_as ENV['JOBS_QUEUE_NAME']
 ```
 
-The same Docker image will be used for both your `web` and `jobs` functions (example setup in following sections) which means the same `app.rb` handler would be used. The [Lamby](https://lamby.custominktech.com) gem automatically detects if Lambdakiq is being used so the following handler works as is.
-
-```ruby
-def handler(event:, context:)
-  Lamby.handler $app, event, context
-end
-```
-
-You can use the Lambdakiq handler directly in cases where your handler is a different method. Likewise there is a `Lambdakiq.jobs?(event)` helper function which returns true if the `messageAttributes` has a `lambdakiq` attribute.
-
-```ruby
-def jobs_handler(event:, context:)
-  Lambdakiq.handler(event)
-end
-```
+The same Docker image will be used for both your `web` and `jobs` functions (example setup in following sections). The [Lamby](https://lamby.custominktech.com) gem can automatically can detect if Lambdakiq is present when using the newer `Lamby.cmd` or older lower `Lamby.handler` method. That said, please take a look at the `JobsLambda` in the following section and how `ImageConfig` is used as the golden path for sharing containers.
 
 ### SQS Resources
 
@@ -146,6 +132,8 @@ JobsLambda:
           BatchSize: 1
           FunctionResponseTypes:
             - ReportBatchItemFailures
+    ImageConfig:
+      Command: ["config/environment.Lambdakiq.cmd"]
     MemorySize: 1792
     PackageType: Image
     Policies:
@@ -161,6 +149,7 @@ JobsLambda:
 
 Here are some key aspects of our `JobsLambda` resource above:
 
+- We use the `ImageConfig.Command` to load your Rails env and invoke the `Lambdakiq.cmd` which calls the `Lambdakiq.handler` on your behalf.
 - The `Events` property uses the [SQS Type](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-sqs.html).
 - The [BatchSize](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-function-sqs.html#sam-function-sqs-batchsize) can be any number you like. Less means more Lambda concurrency, more means some jobs could take longer. The jobs function `Timeout` must be lower than the `JobsQueue`'s `VisibilityTimeout` property. When the batch size is one, the queue's visibility is generally one second more.
 - You must use `ReportBatchItemFailures` response types. Lambdakiq assumes we are [reporting batch item failures](https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#services-sqs-batchfailurereporting). This is a new feature of SQS introduced in [November 2021](https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html#services-sqs-batchfailurereporting).

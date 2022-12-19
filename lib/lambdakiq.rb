@@ -20,6 +20,10 @@ require 'lambdakiq/railtie'
 
 module Lambdakiq
 
+  def cmd(event:, context:)
+    handler(event)
+  end
+
   def handler(event)
     Job.handler(event)
   end

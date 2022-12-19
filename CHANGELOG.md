@@ -2,6 +2,12 @@
 
 See this http://keepachangelog.com link for information on how we want this documented formatted.
 
+## v2.2.0
+
+### Added
+
+- Simple `Lambdakiq.cmd` to be used with `ImageConfig.Command`. 
+
 ## v2.1.0
 
 #### Fixed
