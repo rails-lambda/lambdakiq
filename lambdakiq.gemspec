@@ -6,10 +6,10 @@ Gem::Specification.new do |spec|
   spec.name          = "lambdakiq"
   spec.version       = Lambdakiq::VERSION
   spec.authors       = ["Ken Collins"]
-  spec.email         = ["kcollins@customink.com"]
+  spec.email         = ["ken@metaskills.net"]
   spec.summary       = %q{Scalable Rails Background Processing with AWS Lambda & SQS.}
   spec.description   = %q{Scalable Rails Background Processing with AWS Lambda & SQS.}
-  spec.homepage      = "https://github.com/customink/lambdakiq"
+  spec.homepage      = "https://github.com/rails-lambda/lambdakiq"
   spec.license       = "MIT"
   spec.files         = Dir.chdir(File.expand_path('..', __FILE__)) do
     `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|images)/}) }

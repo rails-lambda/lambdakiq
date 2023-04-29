@@ -1,11 +1,11 @@
 ![Lambdakiq: ActiveJob on SQS & Lambda](images/Lambdakiq.png)
 
-![Test](https://github.com/customink/lambdakiq/workflows/Test/badge.svg)
+![Test](https://github.com/rails-lambda/lambdakiq/workflows/Test/badge.svg)
 
 # Lambdakiq
 
-<a href="https://lamby.custominktech.com"><img src="https://raw.githubusercontent.com/customink/lamby/master/images/social2.png" alt="Lamby: Simple Rails & AWS Lambda Integration using Rack." align="right" width="450" style="margin-left:1rem;margin-bottom:1rem;" /></a>
-A drop-in replacement for [Sidekiq](https://github.com/mperham/sidekiq) when running Rails in AWS Lambda using the [Lamby](https://lamby.custominktech.com) gem.
+<a href="https://lamby.cloud"><img src="https://raw.githubusercontent.com/rails-lambda/lamby/master/images/social2.png" alt="Lamby: Simple Rails & AWS Lambda Integration using Rack." align="right" width="450" style="margin-left:1rem;margin-bottom:1rem;" /></a>
+A drop-in replacement for [Sidekiq](https://github.com/mperham/sidekiq) when running Rails in AWS Lambda using the [Lamby](https://lamby.cloud) gem.
 
 Lambdakiq allows you to leverage AWS' managed infrastructure to the fullest extent. Gone are the days of managing pods and long polling processes. Instead AWS delivers messages directly to your Rails' job functions and scales it up and down as needed. Observability is built in using AWS CloudWatch Metrics, Dashboards, and Alarms. Learn more about [Using AWS Lambda with Amazon SQS](https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html) or get started now.
 
@@ -21,7 +21,7 @@ Lambdakiq allows you to leverage AWS' managed infrastructure to the fullest exte
 
 ## Project Setup
 
-This gem assumes your Rails application is on AWS Lambda, ideally with our [Lamby](https://lamby.custominktech.com) gem. It could be using Lambda's traditional zip package type or the newer [container](https://dev.to/aws-heroes/lambda-containers-with-rails-a-perfect-match-4lgb) format. If Rails on Lambda is new to you, consider following our [quick start](https://lamby.custominktech.com/docs/quick_start) guide to get your first application up and running. From there, to use Lambdakiq, here are steps to setup your project
+This gem assumes your Rails application is on AWS Lambda, ideally with our [Lamby](https://lamby.cloud) gem. It could be using Lambda's traditional zip package type or the newer [container](https://dev.to/aws-heroes/lambda-containers-with-rails-a-perfect-match-4lgb) format. If Rails on Lambda is new to you, consider following our [quick start](https://lamby.cloud/docs/quick_start) guide to get your first application up and running. From there, to use Lambdakiq, here are steps to setup your project
 
 ### Bundle & Config
 
@@ -57,11 +57,11 @@ ActionMailer::MailDeliveryJob.include Lambdakiq::Worker
 ActionMailer::MailDeliveryJob.queue_as ENV['JOBS_QUEUE_NAME']
 ```
 
-The same Docker image will be used for both your `web` and `jobs` functions (example setup in following sections). The [Lamby](https://lamby.custominktech.com) gem can automatically can detect if Lambdakiq is present when using the newer `Lamby.cmd` or older lower `Lamby.handler` method. That said, please take a look at the `JobsLambda` in the following section and how `ImageConfig` is used as the golden path for sharing containers.
+The same Docker image will be used for both your `web` and `jobs` functions (example setup in following sections). The [Lamby](https://lamby.cloud) gem can automatically can detect if Lambdakiq is present when using the newer `Lamby.cmd` or older lower `Lamby.handler` method. That said, please take a look at the `JobsLambda` in the following section and how `ImageConfig` is used as the golden path for sharing containers.
 
 ### SQS Resources
 
-Open up your project's SAM [`template.yaml`](https://lamby.custominktech.com/docs/anatomy#file-template-yaml) file and make the following additions and changes. First, we need to create your [SQS queues](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html) under the `Resources` section.
+Open up your project's SAM [`template.yaml`](https://lamby.cloud/docs/anatomy#file-template-yaml) file and make the following additions and changes. First, we need to create your [SQS queues](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html) under the `Resources` section.
 
 ```yaml
 JobsQueue:
@@ -236,7 +236,7 @@ And finally, here are the metrics which each dimension can chart using [CloudWat
 
 Please share how you are using CloudWatch to monitor and/or alert on your ActiveJobs with Lambdakiq!
 
-💬 https://github.com/customink/lambdakiq/discussions/3
+💬 https://github.com/rails-lambda/lambdakiq/discussions/3
 
 ## Common Questions
 
@@ -267,8 +267,8 @@ $ ./bin/setup
 $ ./bin/test
 ```
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/customink/lambdakiq. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/rails-lambda/lambdakiq. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 ## Code of Conduct
 
-Everyone interacting in the Lambdakiq project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/customink/lambdakiq/blob/master/CODE_OF_CONDUCT.md).
+Everyone interacting in the Lambdakiq project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/rails-lambda/lambdakiq/blob/master/CODE_OF_CONDUCT.md).
