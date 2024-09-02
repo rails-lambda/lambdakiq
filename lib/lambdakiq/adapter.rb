@@ -10,6 +10,10 @@ module ActiveJob
         enqueue job, delay_seconds: delay_seconds(timestamp)
       end
 
+      def enqueue_after_transaction_commit?
+        true
+      end
+
       private
 
       def delay_seconds(timestamp)
