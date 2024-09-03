@@ -3,6 +3,6 @@ set -e
 
 export RAILS_ENV="test"
 
-docker-compose run \
+docker compose run \
   lambdakiqgem \
   ./bin/_test

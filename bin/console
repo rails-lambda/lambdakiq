@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
 
-docker-compose run \
+docker compose run \
   lambdakiqgem \
   ./bin/_console
