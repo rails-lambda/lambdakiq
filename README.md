@@ -21,7 +21,7 @@ Lambdakiq allows you to leverage AWS' managed infrastructure to the fullest exte
 
 ## Project Setup
 
-This gem assumes your Rails application is on AWS Lambda, ideally with our [Lamby](https://lamby.cloud) gem. It could be using Lambda's traditional zip package type or the newer [container](https://dev.to/aws-heroes/lambda-containers-with-rails-a-perfect-match-4lgb) format. If Rails on Lambda is new to you, consider following our [quick start](https://lamby.cloud/docs/quick_start) guide to get your first application up and running. From there, to use Lambdakiq, here are steps to setup your project
+This gem assumes your Rails application is on AWS Lambda, ideally with our [Lamby](https://lamby.cloud) gem. It could be using Lambda's traditional zip package type or the newer [container](https://dev.to/aws-heroes/lambda-containers-with-rails-a-perfect-match-4lgb) format. If Rails on Lambda is new to you, consider following our [quick start](https://lamby.cloud/docs/quick-start) guide to get your first application up and running. From there, to use Lambdakiq, here are steps to setup your project
 
 ### Bundle & Config
 
