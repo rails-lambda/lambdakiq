@@ -67,7 +67,6 @@ module Lambdakiq
       put_metric 'Count', 1, 'Count'
       put_metric 'ExceptionCount', 1, 'Count' if exception_name
       set_property 'JobId', job.job_id
-      set_property 'JobName', job_name
       set_property 'QueueName', job.queue_name
       set_property 'MessageId', job.provider_job_id if job.provider_job_id
       set_property 'ExceptionName', exception_name if exception_name

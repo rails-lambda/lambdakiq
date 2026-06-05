@@ -8,7 +8,7 @@ class JobTest < LambdakiqSpec
     expect(aj).must_be_instance_of TestHelper::Jobs::BasicJob
     expect(aj.job_id).must_equal '527cd37e-08f4-4aa8-9834-a46220cdc5a3'
     expect(aj.queue_name).must_equal queue_name
-    expect(aj.enqueued_at).must_equal '2020-11-30T13:07:36Z'
+    expect(aj.enqueued_at).must_equal Time.utc(2020, 11, 30, 13, 7, 36)
     expect(aj.executions).must_equal 0
     expect(aj.provider_job_id).must_equal message_id
   end

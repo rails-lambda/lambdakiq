@@ -1,6 +1,16 @@
 # Keep A Changelog!
 
-See this http://keepachangelog.com link for information on how we want this documented formatted.
+See this http://keepachangelog.com link for information on how we want this formatted.
+
+## v2.4.0
+
+### Changed
+
+- Update to Ruby 3.4.4 and Bundler 4.
+- Update all gems, including Rails 6.1 → 8.1 and aws-sdk-sqs 1.35 → 1.116.
+- Fix duplicate `JobName` key in CloudWatch metrics output (would raise an error in json 3.0).
+- Modernize CI to use `ruby/setup-ruby` directly on `ubuntu-24.04`.
+- Add `release.yml` workflow for trusted publishing to RubyGems.org.
 
 ## v2.3.0
 
