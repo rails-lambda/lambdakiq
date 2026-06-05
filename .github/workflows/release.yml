@@ -19,6 +19,6 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-          ruby-version: ruby
+          ruby-version: "3.4.4"
 
       - uses: rubygems/release-gem@v1
