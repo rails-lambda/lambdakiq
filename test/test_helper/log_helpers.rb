@@ -3,7 +3,7 @@ module TestHelper
     extend ActiveSupport::Concern
 
     included do
-      let(:logger)  { Rails.logger.instance_variable_get(:@logdev).instance_variable_get(:@dev).string }
+      let(:logger) { Dummy::Application::LOG_IO.string }
     end
 
     private
@@ -18,7 +18,8 @@ module TestHelper
     end
 
     def logger_reset!
-      Rails.logger.instance_variable_get(:@logdev).instance_variable_get(:@dev).truncate 0
+      Dummy::Application::LOG_IO.truncate(0)
+      Dummy::Application::LOG_IO.rewind
     end
 
   end
