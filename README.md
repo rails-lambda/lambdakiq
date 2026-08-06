@@ -169,8 +169,26 @@ config.lambdakiq
 ```
 
 - `max_retries=` - Retries for all jobs. Default is the Lambdakiq maximum of `12`.
+- `metrics_enabled=` - Set to `false` to stop emitting CloudWatch Embedded Metrics. Default is `true`.
 - `metrics_namespace=` - The CloudWatch Embedded Metrics namespace. Default is `Lambdakiq`.
-- `metrics_logger=` - Set to the Rails logger which is STDOUT via Lamby/Lambda.
+- `metrics_app_name=` - The `AppName` metric dimension. Defaults to your application's module name.
+- `metrics_logger=` - Where metrics are written. Defaults to the Rails logger, which is STDOUT via Lamby/Lambda.
+
+#### Disabling CloudWatch Metrics
+
+Lambdakiq emits [CloudWatch Embedded Metrics](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Embedded_Metric_Format.html) for every ActiveJob event, dimensioned by `AppName`, `JobEvent`, and `JobName`. Because custom metrics are billed per unique dimension combination, applications with many job classes or very high job volume can see meaningful CloudWatch cost. Metric properties also include each job's arguments, which you may not want in your logs.
+
+Either turn metrics off entirely:
+
+```ruby
+config.lambdakiq.metrics_enabled = false
+```
+
+Or keep them, but send them somewhere other than STDOUT so CloudWatch does not ingest them:
+
+```ruby
+config.lambdakiq.metrics_logger = Logger.new(File::NULL)
+```
 
 ### ActiveJob Configs
 

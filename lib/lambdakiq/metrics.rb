@@ -4,6 +4,7 @@ module Lambdakiq
 
     class << self
       def log(event)
+        return unless Lambdakiq.config.metrics_enabled
         new(event).log
       end
     end
