@@ -43,6 +43,29 @@ class JobTest < LambdakiqSpec
     expect(metric['JobArg1']).must_equal 'test'
   end
 
+  it 'does not log cloudwatch embedded metrics when metrics are disabled' do
+    Lambdakiq.config.metrics_enabled = false
+    response = Lambdakiq::Job.handler(event_basic(messageId: message_id))
+    assert_response response, failures: false
+    expect(logged_metrics).must_be :empty?
+    expect(perform_buffer_last_value).must_equal 'BasicJob with: "test"'
+  end
+
+  it 'still logs the job itself when metrics are disabled' do
+    Lambdakiq.config.metrics_enabled = false
+    Lambdakiq::Job.handler(event_basic)
+    expect(logger).must_include 'Performed TestHelper::Jobs::BasicJob'
+  end
+
+  it 'sends cloudwatch embedded metrics to a custom metrics_logger' do
+    io = StringIO.new
+    Lambdakiq.config.metrics_logger = Logger.new(io)
+    response = Lambdakiq::Job.handler(event_basic(messageId: message_id))
+    assert_response response, failures: false
+    expect(io.string).must_include 'CloudWatchMetrics'
+    expect(logged_metrics).must_be :empty?
+  end
+
   it 'must change message visibility to next value for failed jobs' do
     event = event_basic attributes: { ApproximateReceiveCount: '7' }, job_class: 'TestHelper::Jobs::ErrorJob', messageId: message_id
     response = Lambdakiq::Job.handler(event)
