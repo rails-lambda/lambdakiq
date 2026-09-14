@@ -201,6 +201,15 @@ end
 ```
 
 - `retry` - Overrides the default Lambdakiq `max_retries` for this one job.
+- `message_group_id` - FIFO queues only. A string, or a proc called with the job, used as the message group id instead of the unique job id. Jobs sharing a group id are processed one at a time, in order.
+
+```ruby
+class SyncOrderJob < ApplicationJob
+  lambdakiq_options message_group_id: ->(job) { "SyncOrderJob-#{job.arguments.first}" }
+end
+```
+
+Messages in a group wait for the one in flight, so a job delayed with `wait` or waiting on a retry holds up the rest of its group.
 
 ## Observability with CloudWatch
 
@@ -263,7 +272,7 @@ Please share how you are using CloudWatch to monitor and/or alert on your Active
 **Are FIFO Queues Supported?** - Yes. When you create your [AWS::SQS::Queue](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html) resources you can set the [FifoQueue](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html#aws-sqs-queue-fifoqueue) property to `true`. Remember that both your jobs queue and the redrive queue must be the same. When using FIFO we:
 
 - Simulate `delay_seconds` for ActiveJob's wait by using visibility timeouts under the hood. We still cap it to non-FIFO's 15 minutes.
-- Set both the messages `message_group_id` and `message_deduplication_id` to the unique job id provided by ActiveJob.
+- Set both the messages `message_group_id` and `message_deduplication_id` to the unique job id provided by ActiveJob. The group id can be customized per job with the `message_group_id` option.
 
 **Can I Use Multiple Queues?** - Yes. Nothing is stopping you from creating any number of queues and/or functions to process them. Your subclasses can use ActiveJob's `queue_as` method as needed. This is an easy way to handle job priorities too.
 

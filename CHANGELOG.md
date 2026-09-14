@@ -4,6 +4,10 @@ See this http://keepachangelog.com link for information on how we want this form
 
 ## v2.4.0
 
+### Added
+
+- `message_group_id` option for `lambdakiq_options` to customize the FIFO message group id per job.
+
 ### Changed
 
 - Update to Ruby 3.4.4 and Bundler 4.

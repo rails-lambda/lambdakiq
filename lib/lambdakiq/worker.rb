@@ -28,5 +28,10 @@ module Lambdakiq
       !!lambdakiq_options_hash[:async]
     end
 
+    def lambdakiq_message_group_id
+      group_id = lambdakiq_options_hash[:message_group_id]
+      group_id.respond_to?(:call) ? group_id.call(self) : group_id
+    end
+
   end
 end

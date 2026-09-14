@@ -36,11 +36,15 @@ module Lambdakiq
 
     def message_params_fifo
       if queue.fifo?
-        { message_group_id: job.job_id,
+        { message_group_id: message_group_id,
           message_deduplication_id: job.job_id }
       else
         {}
       end
+    end
+
+    def message_group_id
+      job.try(:lambdakiq_message_group_id) || job.job_id
     end
 
     def message_attributes
