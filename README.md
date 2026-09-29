@@ -201,7 +201,7 @@ end
 ```
 
 - `retry` - Overrides the default Lambdakiq `max_retries` for this one job.
-- `message_group_id` - FIFO queues only. A string, or a proc called with the job, used as the message group id instead of the unique job id. Jobs sharing a group id are processed one at a time, in order.
+- `message_group_id` - FIFO queues only. A string, or a proc called with the job, used as the message group id instead of the unique job id. Jobs sharing a group id are processed one at a time, in order. The value is converted to a string, blank values fall back to the job id, and values over 128 characters are replaced by their SHA256 digest.
 
 ```ruby
 class SyncOrderJob < ApplicationJob
