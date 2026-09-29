@@ -27,6 +27,10 @@ module Lambdakiq
       data['attributes']
     end
 
+    def fifo_message_group_id
+      attributes['MessageGroupId'] if queue_name.end_with?('.fifo')
+    end
+
     def fifo_delay_visibility_timeout
       fifo_delay_seconds - (Time.current - sent_at).to_i
     end

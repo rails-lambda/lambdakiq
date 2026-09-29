@@ -31,6 +31,16 @@ class RecordTest < LambdakiqSpec
     expect(sent_at.day).must_equal 30
   end
 
+  it '#fifo_message_group_id' do
+    expect(record.fifo_message_group_id).must_equal '527cd37e-08f4-4aa8-9834-a46220cdc5a3'
+  end
+
+  it '#fifo_message_group_id is nil for non fifo queues' do
+    event = event_basic eventSourceARN: 'arn:aws:sqs:us-east-1:831702759394:lambdakiq-JobsQueue-TESTING123'
+    record = Lambdakiq::Record.new(Lambdakiq::Event.records(event).first)
+    expect(record.fifo_message_group_id).must_be_nil
+  end
+
   it '#receive_count' do
     expect(record.receive_count).must_equal 1
   end

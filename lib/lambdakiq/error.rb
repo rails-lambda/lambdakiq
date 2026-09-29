@@ -8,4 +8,11 @@ module Lambdakiq
       set_backtrace([])
     end
   end
+
+  class FifoGroupError < Error
+    def initialize(error)
+      super
+      set_backtrace([])
+    end
+  end
 end

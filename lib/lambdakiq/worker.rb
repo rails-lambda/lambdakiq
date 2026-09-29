@@ -28,5 +28,12 @@ module Lambdakiq
       !!lambdakiq_options_hash[:async]
     end
 
+    def lambdakiq_message_group_id
+      group_id = lambdakiq_options_hash[:message_group_id]
+      group_id = group_id.call(self) if group_id.respond_to?(:call)
+      group_id = group_id.to_s
+      group_id.length > 128 ? Digest::SHA256.hexdigest(group_id) : group_id.presence
+    end
+
   end
 end

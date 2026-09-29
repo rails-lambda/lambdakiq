@@ -8,7 +8,12 @@ module Lambdakiq
       def handler(event)
         records = Event.records(event)
         jobs = records.map { |record| new(record) }
-        jobs.each(&:perform)
+        failed_groups = []
+        jobs.each do |job|
+          group_id = job.record.fifo_message_group_id
+          failed_groups.include?(group_id) ? job.skip : job.perform
+          failed_groups << group_id if job.error && group_id
+        end
         failed_jobs = jobs.select { |j| j.error }
         item_failures = failed_jobs.map { |j| { itemIdentifier: j.provider_job_id } }
         { batchItemFailures: item_failures }
@@ -50,6 +55,10 @@ module Lambdakiq
         return
       end
       execute
+    end
+
+    def skip
+      @error = FifoGroupError.new(active_job.job_id)
     end
 
     def execute
