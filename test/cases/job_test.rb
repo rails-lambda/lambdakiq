@@ -102,6 +102,51 @@ class JobTest < LambdakiqSpec
     expect(logger).must_include 'Error performing TestHelper::Jobs::ErrorJob'
   end
 
+  it 'skips and returns jobs behind a failed job in the same fifo group' do
+    event = batch_event(
+      event_basic(job_class: 'TestHelper::Jobs::ErrorJob', messageId: 'failed'),
+      event_basic(messageId: 'skipped')
+    )
+    response = Lambdakiq::Job.handler(event)
+    assert_response response, failures: true, identifiers: ['failed', 'skipped']
+    expect(TestHelper::PerformBuffer.values).must_equal ['ErrorJob with: "test"']
+    expect(delete_message).must_be_nil
+  end
+
+  it 'keeps performing jobs in other fifo groups after a failure' do
+    event = batch_event(
+      event_basic(job_class: 'TestHelper::Jobs::ErrorJob', messageId: 'failed'),
+      event_basic(messageId: 'skipped'),
+      event_basic(messageId: 'performed', attributes: { MessageGroupId: 'other-group' })
+    )
+    response = Lambdakiq::Job.handler(event)
+    assert_response response, failures: true, identifiers: ['failed', 'skipped']
+    expect(TestHelper::PerformBuffer.values).must_equal ['ErrorJob with: "test"', 'BasicJob with: "test"']
+    expect(delete_message).must_be :present?
+  end
+
+  it 'skips and returns jobs behind a fifo delayed job in the same group' do
+    event = batch_event(
+      event_basic_delay(minutes: 6, overrides: { messageId: 'delayed' }),
+      event_basic(messageId: 'skipped')
+    )
+    response = Lambdakiq::Job.handler(event)
+    assert_response response, failures: true, identifiers: ['delayed', 'skipped']
+    expect(perform_buffer_last_value).must_be_nil
+    expect(change_message_visibility).must_be :present?
+  end
+
+  it 'performs jobs after a failed job that was deleted since it will not be retried' do
+    client.stub_responses(:get_queue_attributes, { attributes: {} })
+    event = batch_event(
+      event_basic(job_class: 'TestHelper::Jobs::ErrorJob', messageId: 'deleted'),
+      event_basic(messageId: 'performed')
+    )
+    response = Lambdakiq::Job.handler(event)
+    assert_response response, failures: false
+    expect(TestHelper::PerformBuffer.values).must_equal ['ErrorJob with: "test"', 'BasicJob with: "test"']
+  end
+
   it 'must delete message for failed jobs after the first try when queues do not have a redrive policy' do
     client.stub_responses(:get_queue_attributes, { attributes: {} })
     event = event_basic job_class: 'TestHelper::Jobs::ErrorJob'
@@ -196,6 +241,10 @@ class JobTest < LambdakiqSpec
   def job(event: event_basic)
     record = Lambdakiq::Event.records(event).first
     Lambdakiq::Job.new(record)
+  end
+
+  def batch_event(*events)
+    { 'Records' => events.flat_map { |e| e['Records'] } }
   end
 
 end

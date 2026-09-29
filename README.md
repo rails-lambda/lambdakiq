@@ -209,7 +209,7 @@ class SyncOrderJob < ApplicationJob
 end
 ```
 
-Messages in a group wait for the one in flight, so a job delayed with `wait` or waiting on a retry holds up the rest of its group.
+Messages in a group wait for the one in flight, so a job delayed with `wait` or waiting on a retry holds up the rest of its group. Within a batch, jobs behind a failed or delayed job of the same group are not performed and are returned to the queue.
 
 ## Observability with CloudWatch
 
