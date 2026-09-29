@@ -29,11 +29,11 @@ module ActiveJob
       def _enqueue_async(job, options = {})
         Concurrent::Promise
           .execute { _enqueue(job, options) }
-          .on_error { |e| async_enqueue_error(e) }
+          .on_error { |e| async_enqueue_error(job, e) }
       end
 
-      def async_enqueue_error(e)
-        msg = "[Lambdakiq] Failed to queue job #{job}. Reason: #{e}"
+      def async_enqueue_error(job, e)
+        msg = "[Lambdakiq] Failed to queue job #{job.class.name} (#{job.job_id}). Reason: #{e}"
         Rails.logger.error(msg)
       end
 
