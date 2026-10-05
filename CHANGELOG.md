@@ -19,6 +19,7 @@ See this http://keepachangelog.com link for information on how we want this form
 - Fix duplicate `JobName` key in CloudWatch metrics output (would raise an error in json 3.0).
 - Modernize CI to use `ruby/setup-ruby` directly on `ubuntu-24.04`.
 - Add `release.yml` workflow for trusted publishing to RubyGems.org.
+- Fix error logging for failed `async: true` enqueues, which raised a `NameError` and was silently lost.
 
 ## v2.3.0
 
